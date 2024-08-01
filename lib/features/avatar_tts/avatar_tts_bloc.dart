@@ -12,6 +12,7 @@ import 'package:hsbc/utils/common_widgets.dart';
 import 'package:hsbc/utils/languages/change_language.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
+import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 
 // region voice Command State
 enum VoiceCommandState { Welcome, Listening, ShowResult, Loading }
@@ -35,6 +36,7 @@ class AvatarTTSBloc {
   bool isProcessing = true;
   FaceCameraController? faceController;
   List<String> languages = [Languages.cantonese.name, Languages.english.name];
+  late WebViewControllerPlus webViewControllerPlus;
 
   // endregion
 
@@ -70,6 +72,7 @@ class AvatarTTSBloc {
       await requestAudioPermission();
       await initialiseCamera();
       await setUpTextToSpeech();
+      setupWebpage();
       AvatarAppConstants.platform.setMethodCallHandler(didReceiveFromNative);
       onChangeLanguage(Languages.cantonese.name);
       if (!context.mounted) return;
@@ -82,6 +85,30 @@ class AvatarTTSBloc {
   }
 
   // endregion
+
+  // region setupWebpage
+  void setupWebpage(){
+    try{
+      webViewControllerPlus = WebViewControllerPlus()
+        ..loadFlutterAsset('assets/webpage/index.html')
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setBackgroundColor(const Color(0x00000000))
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onPageFinished: (url) {
+              webViewControllerPlus.getWebViewHeight().then((value) {
+                var height = int.parse(value.toString()).toDouble();
+                if(!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
+              });
+            },
+          ),
+        );
+    }catch(exception){
+      CommonWidgets.infoDialog(context, exception.toString());
+    }
+  }
+  // endregion
+
 
   // region didReceiveFromNative
   Future<dynamic> didReceiveFromNative(MethodCall call) async {

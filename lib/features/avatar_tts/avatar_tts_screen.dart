@@ -10,6 +10,7 @@ import 'package:hsbc/utils/app_images.dart';
 import 'package:hsbc/utils/app_stirngs.dart';
 import 'package:lottie/lottie.dart';
 import 'package:video_player/video_player.dart';
+import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 
 class AvatarTTSScreen extends StatefulWidget {
   const AvatarTTSScreen({super.key});
@@ -55,6 +56,19 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
         });
   }
 
+  // endregion
+
+  // region tempBody
+  Widget tempBody(){
+    return StreamBuilder<bool>(
+      stream: avatarTTSBloc.loadingCtrl.stream,
+      builder: (context, snapshot) {
+        return WebViewWidget(
+          controller: avatarTTSBloc.webViewControllerPlus,
+        );
+      }
+    );
+  }
   // endregion
 
   // region body
