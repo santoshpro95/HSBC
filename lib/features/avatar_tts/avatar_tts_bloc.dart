@@ -302,14 +302,16 @@ class AvatarTTSBloc {
   // region onChangeLanguage
   Future<void> onChangeLanguage(String language) async {
     try {
+      // set language
       languageCtrl.value = language;
       ChangeAvatarLanguage(language);
       if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
-      // set to welcome screen
-      if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Welcome);
-      setUpTextToSpeech();
-      setupAvatarVideo();
-      await faceController?.startImageStream();
+
+      // setup text to speech
+      await setUpTextToSpeech();
+
+      // onPressConfirm | start initial stage
+      onPressFinish();
     } catch (exception) {
       if (!context.mounted) return;
       print(exception);
@@ -319,8 +321,8 @@ class AvatarTTSBloc {
 
   // endregion
 
-  // region onPressConfirm
-  void onPressConfirm() async {
+  // region onPressFinish
+  void onPressFinish() async {
     try {
       // set status to welcome
       if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Welcome);

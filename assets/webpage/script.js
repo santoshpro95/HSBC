@@ -5,6 +5,6 @@ testDiv.addEventListener('click', function f(e) {
 })
 
 function showData(data) {
-                  const contentDiv = document.getElementById('content');
-                  contentDiv.innerHTML = '<p>Received Data: ' + data + '</p>';
-              }
+     const contentDiv = document.getElementById('content');
+     contentDiv.innerHTML = '<p>Received Data: ' + data + '</p>';
+}

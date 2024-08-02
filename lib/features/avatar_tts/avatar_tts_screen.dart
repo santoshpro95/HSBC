@@ -199,8 +199,8 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: AppColors.primaryColor),
           child: CupertinoButton(
               padding: EdgeInsets.zero,
-              onPressed: () => avatarTTSBloc.onPressConfirm(),
-              child: Text(AvatarAppStrings.finish, style: TextStyle(color: Colors.white))),
+              onPressed: () => avatarTTSBloc.onPressFinish(),
+              child: Text(AvatarAppStrings.finish, style: const TextStyle(color: Colors.white))),
         ),
       ],
     );
