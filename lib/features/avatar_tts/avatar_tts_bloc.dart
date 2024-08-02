@@ -126,18 +126,13 @@ class AvatarTTSBloc {
         if (!isProcessing) return;
         isProcessing = false;
         voiceCommandTextCtrl.text = call.arguments;
-        print("calling Api====>");
         callGPT(voiceCommandTextCtrl.text);
       }
       if (call.method == AvatarAppConstants.getMicStatus) {
         if (call.arguments) {
           if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Listening);
         } else {
-          if (isProcessing) {
-            if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
-          } else {
-            if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Welcome);
-          }
+          if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
         }
       }
     } catch (exception) {
@@ -351,7 +346,8 @@ class AvatarTTSBloc {
   // region callGPT
   Future<void> callGPT(String content) async {
     try {
-      if (content.length < 3) return;
+      if (content.trim().isEmpty) return;
+      print("calling Api====>");
       await faceController?.stopImageStream();
       var exchangeRate = "";
       await flutterTts.stop();
