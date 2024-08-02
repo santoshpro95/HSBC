@@ -92,7 +92,7 @@ class AvatarTTSBloc {
   Future<void> speechToTextSetup() async {
     try {
       if (languageCtrl.value == Languages.cantonese.name) {
-        await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.sttsetup, "yue-CN");
+        await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.sttsetup, "zh-HK");
       } else {
         await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.sttsetup, "en-US");
       }
@@ -218,7 +218,7 @@ class AvatarTTSBloc {
   Future<void> setUpTextToSpeech() async {
     try {
       if (languageCtrl.value == Languages.cantonese.name) {
-        await flutterTts.setLanguage("yue-CN");
+        await flutterTts.setLanguage("zh-HK");
       } else {
         await flutterTts.setLanguage("en-US");
       }
