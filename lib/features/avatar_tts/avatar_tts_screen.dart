@@ -58,26 +58,13 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
 
   // endregion
 
-  // region tempBody
-  Widget tempBody(){
-    return StreamBuilder<bool>(
-      stream: avatarTTSBloc.loadingCtrl.stream,
-      builder: (context, snapshot) {
-        return WebViewWidget(
-          controller: avatarTTSBloc.webViewControllerPlus,
-        );
-      }
-    );
-  }
-  // endregion
-
   // region body
   Widget body() {
     return Container(
-      margin: const EdgeInsets.all(10),
+      margin: const EdgeInsets.symmetric(horizontal: 10),
       width: double.maxFinite,
       child: Center(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [avatarView(), commandText(), voiceBtn()]),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [avatarView(), commandText(), voiceBtn(), const SizedBox(height: 40)]),
       ),
     );
   }
@@ -255,17 +242,21 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
           stream: avatarTTSBloc.voiceCommandCtrl.stream,
           initialData: VoiceCommandState.Welcome,
           builder: (context, voiceCommandState) {
+            // if (voiceCommandState.data! != VoiceCommandState.Welcome) {
+            //   return WebViewWidget(controller: avatarTTSBloc.webViewControllerPlus);
+            // }
             return StreamBuilder<bool>(
                 stream: avatarTTSBloc.videoLoadingCtrl.stream,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) return const SizedBox();
+                  if (avatarTTSBloc.controller == null) return const SizedBox();
                   return Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     child: InkWell(
                       onTap: voiceCommandState.data! == VoiceCommandState.Welcome ? () => avatarTTSBloc.showAvatar() : null,
                       child: AspectRatio(
-                        aspectRatio: avatarTTSBloc.controller.value.aspectRatio,
-                        child: VideoPlayer(avatarTTSBloc.controller),
+                        aspectRatio: avatarTTSBloc.controller!.value.aspectRatio,
+                        child: VideoPlayer(avatarTTSBloc.controller!),
                       ),
                     ),
                   );

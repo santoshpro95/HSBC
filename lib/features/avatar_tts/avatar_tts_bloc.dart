@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:face_camera/face_camera.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +33,7 @@ class Languages {
 class AvatarTTSBloc {
   // region Common Variables
   BuildContext context;
-  late VideoPlayerController controller;
+  VideoPlayerController? controller;
   bool isProcessing = true;
   FaceCameraController? faceController;
   List<String> languages = [Languages.cantonese.name, Languages.english.name];
@@ -79,7 +80,7 @@ class AvatarTTSBloc {
     } catch (exception) {
       CommonWidgets.errorDialog(context);
       print(exception);
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       CommonWidgets.infoDialog(context, exception.toString());
     }
   }
@@ -87,8 +88,8 @@ class AvatarTTSBloc {
   // endregion
 
   // region setupWebpage
-  void setupWebpage(){
-    try{
+  void setupWebpage() {
+    try {
       webViewControllerPlus = WebViewControllerPlus()
         ..loadFlutterAsset('assets/webpage/index.html')
         ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -98,17 +99,25 @@ class AvatarTTSBloc {
             onPageFinished: (url) {
               webViewControllerPlus.getWebViewHeight().then((value) {
                 var height = int.parse(value.toString()).toDouble();
-                if(!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
+
+                _sendDataToJS();
+                if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
               });
             },
           ),
         );
-    }catch(exception){
+    } catch (exception) {
       CommonWidgets.infoDialog(context, exception.toString());
     }
   }
+
   // endregion
 
+  void _sendDataToJS() {
+    // Pass data to JavaScript using `evaluateJavascript`.
+    String encodedData = jsonEncode("Hello wowow");
+    webViewControllerPlus.runJavaScript('showData($encodedData);');
+  }
 
   // region didReceiveFromNative
   Future<dynamic> didReceiveFromNative(MethodCall call) async {
@@ -133,7 +142,7 @@ class AvatarTTSBloc {
       }
     } catch (exception) {
       print(exception);
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       CommonWidgets.infoDialog(context, exception.toString());
     }
   }
@@ -148,7 +157,7 @@ class AvatarTTSBloc {
       await Permission.microphone.request();
     } catch (exception) {
       print(exception);
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       CommonWidgets.infoDialog(context, exception.toString());
     }
   }
@@ -158,15 +167,16 @@ class AvatarTTSBloc {
   // region setupAvatarVideo
   Future<void> setupAvatarVideo() async {
     try {
+      if (controller != null) controller!.dispose();
       var welcomeVideo = AvatarAppConstants.cantoneseIntro;
       if (languageCtrl.value == Languages.english.name) welcomeVideo = AvatarAppConstants.englishIntro;
       controller = VideoPlayerController.asset(welcomeVideo);
-      await controller.initialize();
-      controller.addListener(videoListener);
+      await controller!.initialize();
+      controller!.addListener(videoListener);
       if (!videoLoadingCtrl.isClosed) videoLoadingCtrl.sink.add(true);
     } catch (exception) {
       print(exception);
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       CommonWidgets.infoDialog(context, exception.toString());
     }
   }
@@ -185,7 +195,7 @@ class AvatarTTSBloc {
       await faceController?.initialize();
     } catch (exception) {
       print(exception);
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       CommonWidgets.infoDialog(context, exception.toString());
     }
   }
@@ -208,11 +218,11 @@ class AvatarTTSBloc {
       // Set event listener for when speech finishes
       flutterTts.setCompletionHandler(() async {
         print("Speech finished");
-        await controller.pause();
-        await controller.seekTo(Duration.zero);
+        await controller!.pause();
+        await controller!.seekTo(Duration.zero);
       });
     } catch (exception) {
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       print(exception);
       CommonWidgets.infoDialog(context, exception.toString());
     }
@@ -238,10 +248,10 @@ class AvatarTTSBloc {
   // region playVideo
   Future<void> playVideo() async {
     try {
-      await controller.setVolume(1);
-      await controller.play();
+      await controller!.setVolume(1);
+      await controller!.play();
     } catch (exception) {
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       print(exception);
       CommonWidgets.infoDialog(context, exception.toString());
     }
@@ -254,7 +264,7 @@ class AvatarTTSBloc {
     try {
       await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.stopListen);
     } catch (exception) {
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       print(exception);
       CommonWidgets.infoDialog(context, exception.toString());
     }
@@ -270,8 +280,8 @@ class AvatarTTSBloc {
       voiceCommandTextCtrl.clear();
       await faceController?.stopImageStream();
       await flutterTts.stop();
-      await controller.pause();
-      await controller.seekTo(Duration.zero);
+      await controller!.pause();
+      await controller!.seekTo(Duration.zero);
 
       // onTapMicrophone should called after seekTo Zero
       // as it is also listening on video finish it will show result
@@ -281,7 +291,7 @@ class AvatarTTSBloc {
         await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.startListen, "en-US");
       }
     } catch (exception) {
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       print(exception);
       CommonWidgets.infoDialog(context, exception.toString());
     }
@@ -290,13 +300,18 @@ class AvatarTTSBloc {
   // endregion
 
   // region onChangeLanguage
-  void onChangeLanguage(String language) {
+  Future<void> onChangeLanguage(String language) async {
     try {
       languageCtrl.value = language;
       ChangeAvatarLanguage(language);
       if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
+      // set to welcome screen
+      if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Welcome);
       setUpTextToSpeech();
+      setupAvatarVideo();
+      await faceController?.startImageStream();
     } catch (exception) {
+      if (!context.mounted) return;
       print(exception);
       CommonWidgets.infoDialog(context, exception.toString());
     }
@@ -320,10 +335,10 @@ class AvatarTTSBloc {
       // play intro video
       await setupAvatarVideo();
 
-      // after 2 seconds start scan face
+      // start scan face
       await faceController?.startImageStream();
     } catch (exception) {
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       print(exception);
       CommonWidgets.infoDialog(context, exception.toString());
     }
@@ -338,8 +353,8 @@ class AvatarTTSBloc {
       await faceController?.stopImageStream();
       var exchangeRate = "";
       await flutterTts.stop();
-      await controller.pause();
-      await controller.seekTo(Duration.zero);
+      await controller!.pause();
+      await controller!.seekTo(Duration.zero);
 
       // get text command
       voiceCommandTextCtrl.text = content;
@@ -368,11 +383,11 @@ class AvatarTTSBloc {
       if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
 
       // using microsoft tool
-      await controller.seekTo(Duration.zero);
-      await controller.setLooping(true);
-      await controller.setVolume(0);
+      await controller!.seekTo(Duration.zero);
+      await controller!.setLooping(true);
+      await controller!.setVolume(0);
       await flutterTts.speak(answerTextCtrl.text);
-      await controller.play();
+      await controller!.play();
 
       // generate video url
       // var avatarVideoResponse = await avatarApiService.generateVideo(answerTextCtrl.text);
@@ -394,11 +409,11 @@ class AvatarTTSBloc {
       // use device default by google
       print(url);
       controller = VideoPlayerController.networkUrl(Uri.parse(url));
-      await controller.initialize();
+      await controller!.initialize();
       playVideo();
       if (!videoLoadingCtrl.isClosed) videoLoadingCtrl.sink.add(true);
     } catch (exception) {
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       CommonWidgets.infoDialog(context, exception.toString());
     }
   }
@@ -408,7 +423,7 @@ class AvatarTTSBloc {
   // region videoListener
   void videoListener() {
     try {
-      var isFinishedVideo = controller.value.position == controller.value.duration;
+      var isFinishedVideo = controller!.value.position == controller!.value.duration;
       if (isFinishedVideo) {
         if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
       }
@@ -423,13 +438,13 @@ class AvatarTTSBloc {
   // region Dispose
   Future<void> dispose() async {
     try {
-      controller.dispose();
+      controller!.dispose();
       videoLoadingCtrl.close();
       flutterTts.stop();
       faceController?.dispose();
       await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.sttDispose);
     } catch (exception) {
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       print(exception);
       CommonWidgets.infoDialog(context, exception.toString());
     }
