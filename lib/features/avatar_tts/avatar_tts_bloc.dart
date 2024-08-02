@@ -73,6 +73,7 @@ class AvatarTTSBloc {
       await requestAudioPermission();
       await initialiseCamera();
       await setUpTextToSpeech();
+      await speechToTextSetup();
       setupWebpage();
       AvatarAppConstants.platform.setMethodCallHandler(didReceiveFromNative);
       onChangeLanguage(Languages.cantonese.name);
@@ -80,6 +81,22 @@ class AvatarTTSBloc {
     } catch (exception) {
       CommonWidgets.errorDialog(context);
       print(exception);
+      if (!context.mounted) return;
+      CommonWidgets.infoDialog(context, exception.toString());
+    }
+  }
+
+  // endregion
+
+  // region speechToTextSetup
+  Future<void> speechToTextSetup() async {
+    try {
+      if (languageCtrl.value == Languages.cantonese.name) {
+        await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.sttsetup, "yue-CN");
+      } else {
+        await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.sttsetup, "en-US");
+      }
+    } catch (exception) {
       if (!context.mounted) return;
       CommonWidgets.infoDialog(context, exception.toString());
     }
@@ -279,12 +296,7 @@ class AvatarTTSBloc {
       await controller!.seekTo(Duration.zero);
 
       // onTapMicrophone should called after seekTo Zero
-      // as it is also listening on video finish it will show result
-      if (languageCtrl.value == Languages.cantonese.name) {
-        await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.startListen, "yue-HK");
-      } else {
-        await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.startListen, "en-US");
-      }
+      await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.startListen);
     } catch (exception) {
       if (!context.mounted) return;
       print(exception);
@@ -334,6 +346,9 @@ class AvatarTTSBloc {
 
       // start scan face
       await faceController?.startImageStream();
+
+      // speechToTextSetup
+      await speechToTextSetup();
     } catch (exception) {
       if (!context.mounted) return;
       print(exception);

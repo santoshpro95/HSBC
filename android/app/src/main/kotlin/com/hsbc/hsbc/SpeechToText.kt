@@ -10,19 +10,7 @@ class SpeechToText {
 
     private var speechConfig: SpeechConfig? = null
     private var microphoneStream: MicrophoneStream? = null
-
-    private val speechReco: SpeechRecognizer by lazy {
-        speechConfig = SpeechConfig.fromSubscription(
-            BuildConfig.subscriptionKey,
-            BuildConfig.serviceRegion
-        )
-        destroyMicrophoneStream() // in case it was previously initialized
-        microphoneStream = MicrophoneStream()
-        SpeechRecognizer(
-            speechConfig,
-            AudioConfig.fromStreamInput(MicrophoneStream.create())
-        )
-    }
+    private var speechReco: SpeechRecognizer? = null
 
     companion object {
         private const val activityTag = "SpeechToText"
@@ -30,31 +18,43 @@ class SpeechToText {
         private val executorService = Executors.newCachedThreadPool()
     }
 
+    fun setupSpeechToText(lang: String) {
+        speechConfig = SpeechConfig.fromSubscription(
+            BuildConfig.subscriptionKey,
+            BuildConfig.serviceRegion
+        )
+        speechConfig?.speechRecognitionLanguage = lang
+        destroyMicrophoneStream() // in case it was previously initialized
+        microphoneStream = MicrophoneStream()
+        speechReco = SpeechRecognizer(
+            speechConfig,
+            AudioConfig.fromStreamInput(MicrophoneStream.create())
+        )
+    }
 
-    fun startReco(lang: String) {
+    fun startReco() {
         MainActivity.getMicStatus(true)
-        speechReco.recognized.addEventListener { sender, e ->
+        speechReco?.recognized?.addEventListener { sender, e ->
             val finalResult = e.result.text
             Log.i(activityTag, finalResult)
             MainActivity.getTextCaptured(finalResult)
             stopReco()
         }
-        val task = speechReco.startContinuousRecognitionAsync()
+        val task = speechReco?.startContinuousRecognitionAsync()
         executorService.submit {
-            task.get()
+            task?.get()
             Log.i(activityTag, "Continuous recognition finished. Stopping speechReco")
-            speechConfig!!.speechRecognitionLanguage = lang
         }
     }
 
     fun stopReco() {
         MainActivity.getMicStatus(false)
-        speechReco.stopContinuousRecognitionAsync()
+        speechReco?.stopContinuousRecognitionAsync()
     }
 
     fun dispose() {
         destroyMicrophoneStream()
-        speechReco.close()
+        speechReco?.close()
         speechConfig?.close()
         speechConfig = null
     }

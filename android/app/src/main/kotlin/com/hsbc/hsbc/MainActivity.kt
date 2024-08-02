@@ -59,39 +59,40 @@ class MainActivity: FlutterActivity() {
         methodChannel?.setMethodCallHandler { call, result ->
 
             // Text To Speech Feature
-            if (call.method == util.ttsSetup) {
-                textToSpeech.initialiseSpeech()
-                result.success("")
-            }
-            if (call.method == util.ttsDispose) {
-                textToSpeech.dispose()
-                result.success("")
-            }
-            if (call.method == util.speakText) {
-                textToSpeech.startStreamPlaybackPressed(call.arguments.toString())
-                result.success("")
-            }
+//            if (call.method == util.ttsSetup) {
+//                textToSpeech.initialiseSpeech()
+//                result.success("")
+//            }
+//            if (call.method == util.ttsDispose) {
+//                textToSpeech.dispose()
+//                result.success("")
+//            }
+//            if (call.method == util.speakText) {
+//                textToSpeech.startStreamPlaybackPressed(call.arguments.toString())
+//                result.success("")
+//            }
             // endregion
 
 
             // Speech To Text
-            if (call.method == util.sttDispose) {
-                speechToText.dispose()
+            if(call.method == util.sttsetup){
+                speechToText.setupSpeechToText(call.arguments.toString())
                 result.success("")
             }
             if (call.method == util.startListen) {
-                speechToText.startReco(call.arguments.toString())
+                speechToText.startReco()
                 result.success("")
             }
             if (call.method == util.stopListen) {
                 speechToText.stopReco()
                 result.success("")
             }
+            if (call.method == util.sttDispose) {
+                speechToText.dispose()
+                result.success("")
+            }
             // endregion
         }
     }
     // endregion
-
-
-
 }

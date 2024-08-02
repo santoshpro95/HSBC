@@ -27,18 +27,18 @@ class AvatarAppConstants {
   static const avatarVideoGenerateApiUrl = "https://x4u5ek2lkmtostpmjvastu646i0bxfxx.lambda-url.us-east-1.on.aws";
   static const currentExchangeRateApi = "https://v6.exchangerate-api.com/v6/$currentRateOfCurrencyApiKey/latest/USD";
 
-  // region Invoke Native Methods
-  static const ttsSetup = "ttsSetup";
-  static const speakText = "speakText";
+  // region Invoke
+  // invoke from flutter
+  static const sttsetup = "sttsetup";
   static const startListen = "startListen";
   static const stopListen = "stopListen";
-  static const ttsDispose = "ttsDispose";
   static const sttDispose = "sttDispose";
+
+  // invoke from Native
   static const getSpeechToText = "getSpeechToText";
   static const getMicStatus = "getMicStatus";
 
   // endregion
-
 
   // error Types in api call
   static const noInternet = 6;
