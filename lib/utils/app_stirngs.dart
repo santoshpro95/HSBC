@@ -11,4 +11,5 @@ class AvatarAppStrings{
   static String cancel = "cancel";
   static String continues = "continue";
   static String info = "Info";
+  static String outputFormat = "Output Format";
 }

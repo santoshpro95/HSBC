@@ -5,6 +5,7 @@ import 'package:hsbc/model/api_error_response.dart';
 import 'package:hsbc/model/avtar_video_response.dart';
 import 'package:hsbc/model/current_rate_of_currency_response.dart';
 import 'package:hsbc/model/gpt_api_response.dart';
+import 'package:hsbc/model/image_generation_response.dart';
 import 'package:hsbc/utils/app_constants.dart';
 import 'package:hsbc/utils/app_stirngs.dart';
 
@@ -25,15 +26,15 @@ class AvatarApiService {
     } on dioPackage.DioException catch (error) {
       if (error.response == null) {
         if (error.type.index == AvatarAppConstants.noInternet) {
-          throw ApiErrorResponse(message: AvatarAppStrings.noInternetMessage);
+          throw ApiErrorResponse(error: Error(message: AvatarAppStrings.noInternetMessage));
         } else {
-          throw ApiErrorResponse(message: error.message);
+          throw ApiErrorResponse(error: Error(message: error.message));
         }
       } else {
         throw ApiErrorResponse.fromJson(error.response!.data);
       }
     } catch (exception) {
-      throw ApiErrorResponse(message: AvatarAppStrings.errorMessage);
+      throw ApiErrorResponse(error: Error(message: AvatarAppStrings.errorMessage));
     }
   }
 
@@ -52,6 +53,37 @@ class AvatarApiService {
       return AvatarVideoResponse.fromJson(response.data);
     } catch (exception) {
       return AvatarVideoResponse(url: "");
+    }
+  }
+
+// endregion
+
+  // region gptImageGPTApi
+  Future<ImageGenerateResponse> gptImageGPTApi(String content) async {
+    try {
+      // get body
+      var body = {"model": "dall-e-2", "prompt": content, "size": "512x512", "quality": "standard", "n": 1};
+
+      // get header
+      var headerData = {"Authorization": "Bearer ${AvatarAppConstants.gptApiKey}"};
+
+      // call api
+      var response = await Dio().post(AvatarAppConstants.imageGenerate, data: json.encode(body), options: dioPackage.Options(headers: headerData));
+
+      // return response;
+      return ImageGenerateResponse.fromJson(response.data);
+    } on dioPackage.DioException catch (error) {
+      if (error.response == null) {
+        if (error.type.index == AvatarAppConstants.noInternet) {
+          throw ApiErrorResponse(error: Error(message: AvatarAppStrings.noInternetMessage));
+        } else {
+          throw ApiErrorResponse(error: Error(message: error.message));
+        }
+      } else {
+        throw ApiErrorResponse.fromJson(error.response!.data);
+      }
+    } catch (exception) {
+      throw ApiErrorResponse(error: Error(message: AvatarAppStrings.errorMessage));
     }
   }
 
@@ -80,15 +112,15 @@ class AvatarApiService {
     } on dioPackage.DioException catch (error) {
       if (error.response == null) {
         if (error.type.index == AvatarAppConstants.noInternet) {
-          throw ApiErrorResponse(message: AvatarAppStrings.noInternetMessage);
+          throw ApiErrorResponse(error: Error(message: AvatarAppStrings.noInternetMessage));
         } else {
-          throw ApiErrorResponse(message: error.message);
+          throw ApiErrorResponse(error: Error(message: error.message));
         }
       } else {
         throw ApiErrorResponse.fromJson(error.response!.data);
       }
     } catch (exception) {
-      throw ApiErrorResponse(message: AvatarAppStrings.errorMessage);
+      throw ApiErrorResponse(error: Error(message: AvatarAppStrings.errorMessage));
     }
   }
 // endregion

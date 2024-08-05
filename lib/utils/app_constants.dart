@@ -23,7 +23,9 @@ class AvatarAppConstants {
   static const currentRateOfCurrencyApiKey = "eed12f1a8071e4b0319152a3";
 
   // api url
-  static const gptApiUrl = "https://api.openai.com/v1/chat/completions";
+  static const openAiBaseurl = "https://api.openai.com/v1";
+  static const gptApiUrl = "$openAiBaseurl/chat/completions";
+  static const imageGenerate = "$openAiBaseurl/images/generations";
   static const avatarVideoGenerateApiUrl = "https://x4u5ek2lkmtostpmjvastu646i0bxfxx.lambda-url.us-east-1.on.aws";
   static const currentExchangeRateApi = "https://v6.exchangerate-api.com/v6/$currentRateOfCurrencyApiKey/latest/USD";
 

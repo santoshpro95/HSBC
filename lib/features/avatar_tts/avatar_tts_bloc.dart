@@ -37,6 +37,7 @@ class AvatarTTSBloc {
   bool isProcessing = true;
   FaceCameraController? faceController;
   List<String> languages = [Languages.cantonese.name, Languages.english.name];
+  static const typesOfGPT = ["Text", "Image"];
   late WebViewControllerPlus webViewControllerPlus;
 
   // endregion
@@ -57,7 +58,9 @@ class AvatarTTSBloc {
   final videoLoadingCtrl = StreamController<bool>.broadcast();
   final voiceCommandCtrl = StreamController<VoiceCommandState>.broadcast();
   final languageCtrl = ValueNotifier<String>(Languages.cantonese.name);
+  final gptSelectionCtrl = ValueNotifier<String>(typesOfGPT.first);
   final loadingCtrl = StreamController<bool>.broadcast();
+  final imageCtrl = ValueNotifier("");
 
   // endregion
 
@@ -377,40 +380,76 @@ class AvatarTTSBloc {
       // start loading
       if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Loading);
 
-      // check if exchange rate
-      if (content.contains('exchange rate')) {
-        var exchangeRateResponse = await avatarApiService.currentRateOfExchange();
-        if (exchangeRateResponse.conversionRates != null) {
-          exchangeRate = exchangeRateResponse.conversionRates!.toJson().toString();
-          content = "$content Here are the current exchange rates for 1 USD $exchangeRate ";
+      // check gpt type, if it is image type
+      if (gptSelectionCtrl.value == typesOfGPT.last) {
+        var gptImageResponse = await avatarApiService.gptImageGPTApi(content);
+        if (gptImageResponse.data == null) return;
+        if (gptImageResponse.data!.isEmpty) return;
+
+        // get answer
+        answerTextCtrl.text = gptImageResponse.data!.first.revisedPrompt!;
+
+        // add image
+        imageCtrl.value = gptImageResponse.data!.first.url!;
+        print(gptImageResponse.data!.first.url!);
+        return;
+      } else {
+        // check if exchange rate
+        if (content.contains('exchange rate')) {
+          var exchangeRateResponse = await avatarApiService.currentRateOfExchange();
+          if (exchangeRateResponse.conversionRates != null) {
+            exchangeRate = exchangeRateResponse.conversionRates!.toJson().toString();
+            content = "$content Here are the current exchange rates for 1 USD $exchangeRate ";
+          }
         }
+
+        // it has no image
+        imageCtrl.value = "";
+
+        // call gpt api
+        var gptApiResponse = await avatarApiService.gptApi(content);
+        if (gptApiResponse.choices == null) return;
+        if (gptApiResponse.choices!.first.message == null) return;
+
+        // get response
+        var gptResponse = gptApiResponse.choices!.first.message!.content!;
+        answerTextCtrl.text = gptResponse.replaceAll("#", "").replaceAll("*", "");
       }
 
-      // call gpt api
-      var gptApiResponse = await avatarApiService.gptApi(content);
-      if (gptApiResponse.choices == null) return;
-      if (gptApiResponse.choices!.first.message == null) return;
-
-      // get response
-      var gptResponse = gptApiResponse.choices!.first.message!.content!;
-      answerTextCtrl.text = gptResponse.replaceAll("#", "").replaceAll("*", "");
       print(answerTextCtrl.text);
-      if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
-
-      // using microsoft tool
-      await controller!.seekTo(Duration.zero);
-      await controller!.setLooping(true);
-      await controller!.setVolume(0);
-      await flutterTts.speak(answerTextCtrl.text);
-      await controller!.play();
 
       // generate video url
       // var avatarVideoResponse = await avatarApiService.generateVideo(answerTextCtrl.text);
       // if (avatarVideoResponse.url != null) playGeneratedAvatarVideo(avatarVideoResponse.url!);
       if (!context.mounted) return;
     } on ApiErrorResponse catch (error) {
-      CommonWidgets.infoDialog(context, error.message ?? AvatarAppStrings.errorMessage);
+      if (error.error == null) {
+        CommonWidgets.errorDialog(context);
+      } else {
+        CommonWidgets.infoDialog(context, error.error!.message ?? AvatarAppStrings.errorMessage);
+      }
     } catch (exception) {
+      CommonWidgets.infoDialog(context, exception.toString());
+    } finally {
+      readText();
+      if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
+    }
+  }
+
+  // endregion
+
+  // region readText
+  Future<void> readText() async {
+    try {
+      if (answerTextCtrl.text.isEmpty) return;
+      // using microsoft tool
+      await controller!.seekTo(Duration.zero);
+      await controller!.setLooping(true);
+      await controller!.setVolume(0);
+      await flutterTts.speak(answerTextCtrl.text);
+      await controller!.play();
+    } catch (exception) {
+      if (!context.mounted) return;
       CommonWidgets.infoDialog(context, exception.toString());
     }
   }
@@ -457,6 +496,8 @@ class AvatarTTSBloc {
       videoLoadingCtrl.close();
       flutterTts.stop();
       faceController?.dispose();
+      imageCtrl.dispose();
+      loadingCtrl.close();
       await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.sttDispose);
     } catch (exception) {
       if (!context.mounted) return;
