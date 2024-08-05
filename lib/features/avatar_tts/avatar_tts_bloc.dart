@@ -76,7 +76,6 @@ class AvatarTTSBloc {
       await speechToTextSetup();
       setupWebpage();
       AvatarAppConstants.platform.setMethodCallHandler(didReceiveFromNative);
-      onChangeLanguage(Languages.cantonese.name);
       if (!context.mounted) return;
     } catch (exception) {
       CommonWidgets.errorDialog(context);
@@ -318,7 +317,10 @@ class AvatarTTSBloc {
       await setUpTextToSpeech();
 
       // onPressConfirm | start initial stage
-      onPressFinish();
+      await onPressFinish();
+
+      // stop camera stream and showAvatar
+      await showAvatar();
     } catch (exception) {
       if (!context.mounted) return;
       print(exception);
@@ -329,7 +331,7 @@ class AvatarTTSBloc {
   // endregion
 
   // region onPressFinish
-  void onPressFinish() async {
+  Future<void> onPressFinish() async {
     try {
       // set status to welcome
       if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Welcome);
