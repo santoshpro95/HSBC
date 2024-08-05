@@ -98,7 +98,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
           return Expanded(
               child: Stack(
             alignment: Alignment.center,
-            children: [SpinKitCircle(color: AppColors.primaryColor, size: 50), Image.network(value)],
+            children: [const SpinKitCircle(color: AppColors.primaryColor, size: 50), Image.network(value)],
           ));
         });
   }
@@ -357,7 +357,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
                           items: AvatarTTSBloc.typesOfGPT.map((String items) {
                             return DropdownMenuItem(value: items, child: Text(items));
                           }).toList(),
-                          onChanged: (String? newValue) => avatarTTSBloc.gptSelectionCtrl.value = newValue!,
+                          onChanged: (String? newValue) => avatarTTSBloc.onChangeOutput(newValue!),
                         ),
                       ),
                     );

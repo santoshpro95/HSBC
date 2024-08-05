@@ -438,6 +438,15 @@ class AvatarTTSBloc {
 
   // endregion
 
+  // region onChangeOutput
+  void onChangeOutput(String value){
+    imageCtrl.value = "";
+    voiceCommandTextCtrl.clear();
+    answerTextCtrl.clear();
+    gptSelectionCtrl.value = value;
+  }
+  // endregion
+
   // region readText
   Future<void> readText() async {
     try {
