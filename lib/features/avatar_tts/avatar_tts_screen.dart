@@ -195,12 +195,13 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
 
   // region finished
   Widget finished() {
-    return Row(
-      children: [
-        Flexible(
-          child: Container(
+    return Center(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            width: double.maxFinite,
+            width: 200,
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), border: Border.all(width: 1, color: AppColors.primaryColor)),
             child: CupertinoButton(
@@ -218,17 +219,17 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
                   ),
                 )),
           ),
-        ),
-        Container(
-          margin: const EdgeInsets.only(right: 10),
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: AppColors.primaryColor),
-          child: CupertinoButton(
-              padding: EdgeInsets.zero,
-              onPressed: () => avatarTTSBloc.onPressFinish(),
-              child: Text(AvatarAppStrings.finish, style: const TextStyle(color: Colors.white))),
-        ),
-      ],
+          Container(
+            margin: const EdgeInsets.only(right: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 30),
+            decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: AppColors.primaryColor),
+            child: CupertinoButton(
+                padding: EdgeInsets.zero,
+                onPressed: () => avatarTTSBloc.onPressFinish(),
+                child: Text(AvatarAppStrings.finish, style: const TextStyle(color: Colors.white))),
+          ),
+        ],
+      ),
     );
   }
 
