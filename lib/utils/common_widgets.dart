@@ -123,6 +123,29 @@ class CommonWidgets {
 
 // endregion
 
+  // region fullImageView
+  static Widget fullImageView(String imageUrl, BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.topRight,
+          child: CupertinoButton(onPressed: () => Navigator.pop(context), child: const Icon(Icons.close, color: Colors.white)),
+        ),
+        Expanded(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              const CircularProgressIndicator(),
+              InteractiveViewer(child: Image.network(imageUrl, width: double.maxFinite, height: double.maxFinite)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  // endregion
+
   // region ErrorDialog
   static void errorDialog(BuildContext context, {String title = "Error"}) {
     showDialog(

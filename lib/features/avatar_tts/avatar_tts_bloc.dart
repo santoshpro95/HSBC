@@ -106,6 +106,19 @@ class AvatarTTSBloc {
 
   // endregion
 
+  // region openFullImageView
+  void openFullImageView(String imageUrl) {
+    showDialog(
+        barrierColor: Colors.black,
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return CommonWidgets.fullImageView(imageUrl, context);
+        });
+  }
+
+  // endregion
+
   // region setupWebpage
   void setupWebpage() {
     try {
@@ -312,6 +325,7 @@ class AvatarTTSBloc {
   Future<void> onChangeLanguage(String language) async {
     try {
       // set language
+      imageCtrl.value = "";
       languageCtrl.value = language;
       ChangeAvatarLanguage(language);
       if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);

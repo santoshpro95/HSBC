@@ -98,7 +98,10 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
           return Expanded(
               child: Stack(
             alignment: Alignment.center,
-            children: [const SpinKitCircle(color: AppColors.primaryColor, size: 50), Image.network(value)],
+            children: [
+              const SpinKitCircle(color: AppColors.primaryColor, size: 50),
+              InkWell(onTap: () => avatarTTSBloc.openFullImageView(value), child: Image.network(value))
+            ],
           ));
         });
   }
@@ -156,12 +159,31 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
     return ValueListenableBuilder<String>(
         valueListenable: avatarTTSBloc.gptSelectionCtrl,
         builder: (context, gptOutputType, _) {
-          if (gptOutputType == AvatarTTSBloc.typesOfGPT.last) return const SizedBox();
           return ValueListenableBuilder<String>(
               valueListenable: avatarTTSBloc.languageCtrl,
               builder: (context, selectedLanguage, _) {
-                var commands = AvatarAppConstants.sampleCommandsInCantonese;
-                if (selectedLanguage == Languages.english.name) commands = AvatarAppConstants.sampleCommandsInEnglish;
+                var commands = AvatarAppConstants.textCommandsInCantonese;
+                // text command in english
+                if (selectedLanguage == Languages.english.name && gptOutputType == AvatarTTSBloc.typesOfGPT.first) {
+                  commands = AvatarAppConstants.textCommandsInEnglish;
+                }
+                // text command in cantonese
+                if (selectedLanguage == Languages.cantonese.name && gptOutputType == AvatarTTSBloc.typesOfGPT.first) {
+                  commands = AvatarAppConstants.textCommandsInCantonese;
+                }
+
+                // image command in english
+                if (selectedLanguage == Languages.english.name && gptOutputType == AvatarTTSBloc.typesOfGPT.last) {
+                  // commands = AvatarAppConstants.imageCommandsInEnglish;
+                  commands = [];
+                }
+                // image command in cantonese
+                if (selectedLanguage == Languages.cantonese.name && gptOutputType == AvatarTTSBloc.typesOfGPT.last) {
+                  //commands = AvatarAppConstants.imageCommandsInCantonese;
+                  commands = [];
+                }
+
+                if (commands.isEmpty) return const SizedBox();
                 return Container(
                   width: double.maxFinite,
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -185,7 +207,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
         margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), border: Border.all(color: Colors.grey, width: 0.5)),
         child: CupertinoButton(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           onPressed: () => avatarTTSBloc.callGPT(question),
           child: Text(question, style: const TextStyle(fontSize: 14, color: AppColors.darkGreyColor1, fontWeight: FontWeight.w500)),
         ));
