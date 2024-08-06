@@ -368,6 +368,7 @@ class AvatarTTSBloc {
       // clear text
       voiceCommandTextCtrl.clear();
       answerTextCtrl.clear();
+      imageCtrl.value = "";
 
       // stop text to speech
       await flutterTts.stop();

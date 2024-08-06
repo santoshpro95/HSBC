@@ -4,4 +4,5 @@ class CantoneseLang {
   String listening = "聆聽中";
   String assistant = "助手";
   String answerOfQuestion = "你答有關匯豐銀行嘅問題";
+  String imageDownload = "圖片下載中";
 }

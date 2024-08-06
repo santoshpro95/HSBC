@@ -62,7 +62,7 @@ class AvatarApiService {
   Future<ImageGenerateResponse> gptImageGPTApi(String content) async {
     try {
       // get body
-      var body = {"model": "dall-e-2", "prompt": content, "size": "512x512", "quality": "standard", "n": 1};
+      var body = {"model": "dall-e-3", "prompt": content, "quality": "standard", "n": 1};
 
       // get header
       var headerData = {"Authorization": "Bearer ${AvatarAppConstants.gptApiKey}"};

@@ -4,4 +4,5 @@ class EnglishLang{
    String listening = "Listening";
    String assistant = "Assistant";
    String answerOfQuestion = "You answer questions about the HSBC Bank";
+   String imageDownload = "Image Downloading";
 }

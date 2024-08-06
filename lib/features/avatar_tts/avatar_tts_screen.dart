@@ -95,11 +95,13 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
         valueListenable: avatarTTSBloc.imageCtrl,
         builder: (context, value, _) {
           if (value.isEmpty) return const SizedBox();
-          return Expanded(
+          return Flexible(
               child: Stack(
             alignment: Alignment.center,
             children: [
-              const SpinKitCircle(color: AppColors.primaryColor, size: 50),
+              Column(
+                children: [const SpinKitCircle(color: AppColors.primaryColor, size: 50), Text(AvatarAppStrings.imageDownload)],
+              ),
               InkWell(onTap: () => avatarTTSBloc.openFullImageView(value), child: Image.network(value))
             ],
           ));
@@ -183,7 +185,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
 
                   // image command in cantonese
                   if (selectedLanguage == Languages.cantonese.name && gptOutputType == AvatarTTSBloc.typesOfGPT.last) {
-                    //commands = AvatarAppConstants.imageCommandsInCantonese;
+                    // commands = AvatarAppConstants.imageCommandsInCantonese;
                     commands = [];
                   }
 
