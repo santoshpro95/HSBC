@@ -19,7 +19,7 @@ class AvatarTTSScreen extends StatefulWidget {
   State<AvatarTTSScreen> createState() => _AvatarTTSScreenState();
 }
 
-class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
+class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderStateMixin {
   // region Bloc
   late AvatarTTSBloc avatarTTSBloc;
 
@@ -29,7 +29,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
   @override
   void initState() {
     avatarTTSBloc = AvatarTTSBloc(context);
-    avatarTTSBloc.init();
+    avatarTTSBloc.init(this);
     super.initState();
   }
 
@@ -156,47 +156,52 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
 
   // region Common Questions
   Widget commonQuestions() {
-    return ValueListenableBuilder<String>(
-        valueListenable: avatarTTSBloc.gptSelectionCtrl,
-        builder: (context, gptOutputType, _) {
-          return ValueListenableBuilder<String>(
-              valueListenable: avatarTTSBloc.languageCtrl,
-              builder: (context, selectedLanguage, _) {
-                var commands = AvatarAppConstants.textCommandsInCantonese;
-                // text command in english
-                if (selectedLanguage == Languages.english.name && gptOutputType == AvatarTTSBloc.typesOfGPT.first) {
-                  commands = AvatarAppConstants.textCommandsInEnglish;
-                }
-                // text command in cantonese
-                if (selectedLanguage == Languages.cantonese.name && gptOutputType == AvatarTTSBloc.typesOfGPT.first) {
-                  commands = AvatarAppConstants.textCommandsInCantonese;
-                }
+    return SlideTransition(
+      position: Tween<Offset>(begin: const Offset(0.0, 1.5), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
+      child: ValueListenableBuilder<String>(
+          valueListenable: avatarTTSBloc.gptSelectionCtrl,
+          builder: (context, gptOutputType, _) {
+            return ValueListenableBuilder<String>(
+                valueListenable: avatarTTSBloc.languageCtrl,
+                builder: (context, selectedLanguage, _) {
+                  var commands = AvatarAppConstants.textCommandsInCantonese;
+                  // text command in english
+                  if (selectedLanguage == Languages.english.name && gptOutputType == AvatarTTSBloc.typesOfGPT.first) {
+                    commands = AvatarAppConstants.textCommandsInEnglish;
+                  }
 
-                // image command in english
-                if (selectedLanguage == Languages.english.name && gptOutputType == AvatarTTSBloc.typesOfGPT.last) {
-                  // commands = AvatarAppConstants.imageCommandsInEnglish;
-                  commands = [];
-                }
-                // image command in cantonese
-                if (selectedLanguage == Languages.cantonese.name && gptOutputType == AvatarTTSBloc.typesOfGPT.last) {
-                  //commands = AvatarAppConstants.imageCommandsInCantonese;
-                  commands = [];
-                }
+                  // text command in cantonese
+                  if (selectedLanguage == Languages.cantonese.name && gptOutputType == AvatarTTSBloc.typesOfGPT.first) {
+                    commands = AvatarAppConstants.textCommandsInCantonese;
+                  }
 
-                if (commands.isEmpty) return const SizedBox();
-                return Container(
-                  width: double.maxFinite,
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Wrap(
-                    children: [
-                      commonQuestionItem(commands[0]),
-                      commonQuestionItem(commands[1]),
-                      commonQuestionItem(commands[2]),
-                    ],
-                  ),
-                );
-              });
-        });
+                  // image command in english
+                  if (selectedLanguage == Languages.english.name && gptOutputType == AvatarTTSBloc.typesOfGPT.last) {
+                    // commands = AvatarAppConstants.imageCommandsInEnglish;
+                    commands = [];
+                  }
+
+                  // image command in cantonese
+                  if (selectedLanguage == Languages.cantonese.name && gptOutputType == AvatarTTSBloc.typesOfGPT.last) {
+                    //commands = AvatarAppConstants.imageCommandsInCantonese;
+                    commands = [];
+                  }
+
+                  if (commands.isEmpty) return const SizedBox();
+                  return Container(
+                    width: double.maxFinite,
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: Wrap(
+                      children: [
+                        commonQuestionItem(commands[0]),
+                        commonQuestionItem(commands[1]),
+                        commonQuestionItem(commands[2]),
+                      ],
+                    ),
+                  );
+                });
+          }),
+    );
   }
 
   // endregion
@@ -221,34 +226,40 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            width: 200,
-            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), border: Border.all(width: 1, color: AppColors.primaryColor)),
-            child: CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: () => avatarTTSBloc.startListen(),
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      SvgPicture.asset(AppImages.micOn,
-                          height: 20, width: 20, colorFilter: const ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn)),
-                      const SizedBox(width: 10),
-                      Text(AvatarAppStrings.tapToSpeak, style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500)),
-                    ],
-                  ),
-                )),
+          SlideTransition(
+            position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              width: 200,
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), border: Border.all(width: 1, color: AppColors.primaryColor)),
+              child: CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () => avatarTTSBloc.startListen(),
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SvgPicture.asset(AppImages.micOn,
+                            height: 20, width: 20, colorFilter: const ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn)),
+                        const SizedBox(width: 10),
+                        Text(AvatarAppStrings.tapToSpeak, style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                  )),
+            ),
           ),
-          Container(
-            margin: const EdgeInsets.only(right: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 30),
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: AppColors.primaryColor),
-            child: CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: () => avatarTTSBloc.onPressFinish(),
-                child: Text(AvatarAppStrings.finish, style: const TextStyle(color: Colors.white))),
+          SlideTransition(
+            position: Tween<Offset>(begin: const Offset(1.5, 0.0), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
+            child: Container(
+              margin: const EdgeInsets.only(right: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: AppColors.primaryColor),
+              child: CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () => avatarTTSBloc.onPressFinish(),
+                  child: Text(AvatarAppStrings.finish, style: const TextStyle(color: Colors.white))),
+            ),
           ),
         ],
       ),

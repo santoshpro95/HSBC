@@ -43,6 +43,7 @@ class AvatarTTSBloc {
   static const typesOfGPT = ["Text", "Image"];
   late WebViewControllerPlus webViewControllerPlus;
   GPTApiResponse gptApiResponse = GPTApiResponse();
+  late AnimationController addToCartPopUpAnimationController;
 
   // endregion
 
@@ -74,7 +75,7 @@ class AvatarTTSBloc {
   // endregion
 
   // region Init
-  void init() async {
+  void init(state) async {
     try {
       await setupAvatarVideo();
       await requestAudioPermission();
@@ -83,6 +84,7 @@ class AvatarTTSBloc {
       await speechToTextSetup();
       setupWebpage();
       AvatarAppConstants.platform.setMethodCallHandler(didReceiveFromNative);
+      addToCartPopUpAnimationController = AnimationController(vsync: state, duration: const Duration(milliseconds: 800));
       if (!context.mounted) return;
     } catch (exception) {
       CommonWidgets.errorDialog(context);
@@ -354,8 +356,14 @@ class AvatarTTSBloc {
   // region onPressFinish
   Future<void> onPressFinish() async {
     try {
-      // set status to welcome
-      if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Welcome);
+      // hide button
+      addToCartPopUpAnimationController.reverse();
+
+      // set status after complete the animation
+      Future.delayed(const Duration(milliseconds: 800)).then((val) {
+        // set status to welcome
+        if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Welcome);
+      });
 
       // clear text
       voiceCommandTextCtrl.clear();
@@ -533,6 +541,9 @@ class AvatarTTSBloc {
       var isFinishedVideo = controller!.value.position == controller!.value.duration;
       if (isFinishedVideo) {
         if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
+
+        // show animation
+        addToCartPopUpAnimationController.forward();
       }
     } catch (exception) {
       print(exception);
@@ -551,6 +562,7 @@ class AvatarTTSBloc {
       faceController?.dispose();
       imageCtrl.dispose();
       loadingCtrl.close();
+      addToCartPopUpAnimationController.dispose();
       await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.sttDispose);
     } catch (exception) {
       if (!context.mounted) return;
