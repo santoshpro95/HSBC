@@ -90,13 +90,14 @@ class AvatarApiService {
 // endregion
 
 // region gptApi
-  Future<GPTApiResponse> gptApi(String content) async {
+  Future<GPTApiResponse> gptApi(String query) async {
     try {
       // get body
       var body = {
         "model": "gpt-4o-mini",
         "messages": [
-          {"role": "user", "content": content}
+          {"role": "user", "content": query},
+          {'role': 'system', 'content': 'You answer questions about the HSBC Bank'},
         ],
         "temperature": 0.5
       };

@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:hsbc/model/api_error_response.dart';
+import 'package:hsbc/model/gpt_api_response.dart';
 import 'package:hsbc/services/api_services/avatar_api_service.dart';
 import 'package:hsbc/utils/app_constants.dart';
 import 'package:hsbc/utils/app_stirngs.dart';
 import 'package:hsbc/utils/common_widgets.dart';
+import 'package:hsbc/utils/knowledgebase/hdfc_eng.dart';
 import 'package:hsbc/utils/languages/change_language.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
@@ -39,6 +41,7 @@ class AvatarTTSBloc {
   List<String> languages = [Languages.cantonese.name, Languages.english.name];
   static const typesOfGPT = ["Text", "Image"];
   late WebViewControllerPlus webViewControllerPlus;
+  GPTApiResponse gptApiResponse = GPTApiResponse();
 
   // endregion
 
@@ -405,23 +408,21 @@ class AvatarTTSBloc {
 
         // add image
         imageCtrl.value = gptImageResponse.data!.first.url!;
-        print(gptImageResponse.data!.first.url!);
-        return;
       } else {
         // check if exchange rate
-        if (content.contains('exchange rate')) {
+        if (content.contains('exchange rate') || content.contains('匯率')) {
           var exchangeRateResponse = await avatarApiService.currentRateOfExchange();
           if (exchangeRateResponse.conversionRates != null) {
             exchangeRate = exchangeRateResponse.conversionRates!.toJson().toString();
             content = "$content Here are the current exchange rates for 1 USD $exchangeRate ";
+            gptApiResponse = await avatarApiService.gptApi(content);
           }
+        } else {
+          var query = getQuery(content);
+          gptApiResponse = await avatarApiService.gptApi(query);
         }
 
-        // it has no image
-        imageCtrl.value = "";
-
-        // call gpt api
-        var gptApiResponse = await avatarApiService.gptApi(content);
+        // check api response
         if (gptApiResponse.choices == null) return;
         if (gptApiResponse.choices!.first.message == null) return;
 
@@ -429,8 +430,6 @@ class AvatarTTSBloc {
         var gptResponse = gptApiResponse.choices!.first.message!.content!;
         answerTextCtrl.text = gptResponse.replaceAll("#", "").replaceAll("*", "");
       }
-
-      print(answerTextCtrl.text);
 
       // generate video url
       // var avatarVideoResponse = await avatarApiService.generateVideo(answerTextCtrl.text);
@@ -452,13 +451,42 @@ class AvatarTTSBloc {
 
   // endregion
 
+  // region getQuery
+  String getQuery(String content) {
+    var query = """
+      Use the below details about HSBC bank to answer the subsequent question. If the answer cannot be found, write "I don't know."
+      Details:
+      \"\"\"
+      {${HDFCEng.data}}
+      \"\"\"
+      
+      Question: $content?""";
+
+    // change to cantonese language
+    if (languageCtrl.value == Languages.cantonese.name) {
+      query = """
+          使用以下有關匯豐銀行的詳細資料來回答後續問題。如果找不到答案，寫“我不知道”。
+          詳細資料：
+           \"\"\"
+                    {${HDFCEng.data}}
+              \"\"\"
+          
+          問題：$content?""";
+    }
+
+    return query;
+  }
+
+  // endregion
+
   // region onChangeOutput
-  void onChangeOutput(String value){
+  void onChangeOutput(String value) {
     imageCtrl.value = "";
     voiceCommandTextCtrl.clear();
     answerTextCtrl.clear();
     gptSelectionCtrl.value = value;
   }
+
   // endregion
 
   // region readText
