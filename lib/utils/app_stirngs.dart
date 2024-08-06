@@ -12,4 +12,5 @@ class AvatarAppStrings{
   static String continues = "continue";
   static String info = "Info";
   static String outputFormat = "Output Format";
+  static String answerOfQuestion = "You answer questions about the HSBC Bank";
 }

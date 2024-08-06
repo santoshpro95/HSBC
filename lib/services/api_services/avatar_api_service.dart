@@ -97,7 +97,7 @@ class AvatarApiService {
         "model": "gpt-4o-mini",
         "messages": [
           {"role": "user", "content": query},
-          {'role': 'system', 'content': 'You answer questions about the HSBC Bank'},
+          {'role': 'system', 'content': AvatarAppStrings.answerOfQuestion},
         ],
         "temperature": 0.5
       };

@@ -11,6 +11,7 @@ import 'package:hsbc/services/api_services/avatar_api_service.dart';
 import 'package:hsbc/utils/app_constants.dart';
 import 'package:hsbc/utils/app_stirngs.dart';
 import 'package:hsbc/utils/common_widgets.dart';
+import 'package:hsbc/utils/knowledgebase/hdfc_canto.dart';
 import 'package:hsbc/utils/knowledgebase/hdfc_eng.dart';
 import 'package:hsbc/utils/languages/change_language.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -164,10 +165,9 @@ class AvatarTTSBloc {
         callGPT(voiceCommandTextCtrl.text);
       }
       if (call.method == AvatarAppConstants.getMicStatus) {
-        if (call.arguments) {
+        var isListening = call.arguments;
+        if (isListening) {
           if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Listening);
-        } else {
-          if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
         }
       }
     } catch (exception) {
@@ -292,6 +292,7 @@ class AvatarTTSBloc {
   // region stopListen
   Future<void> stopListen() async {
     try {
+      if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
       await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.stopListen);
     } catch (exception) {
       if (!context.mounted) return;
@@ -431,6 +432,7 @@ class AvatarTTSBloc {
         answerTextCtrl.text = gptResponse.replaceAll("#", "").replaceAll("*", "");
       }
 
+      print(answerTextCtrl.text);
       // generate video url
       // var avatarVideoResponse = await avatarApiService.generateVideo(answerTextCtrl.text);
       // if (avatarVideoResponse.url != null) playGeneratedAvatarVideo(avatarVideoResponse.url!);
@@ -465,10 +467,10 @@ class AvatarTTSBloc {
     // change to cantonese language
     if (languageCtrl.value == Languages.cantonese.name) {
       query = """
-          使用以下有關匯豐銀行的詳細資料來回答後續問題。如果找不到答案，寫“我不知道”。
+          使用以下有關匯豐銀行的詳細資料來回答後續問題。如果找不到答案，寫"我不知道"。
           詳細資料：
            \"\"\"
-                    {${HDFCEng.data}}
+                    {${HDFCCanto.data}}
               \"\"\"
           
           問題：$content?""";
