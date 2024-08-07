@@ -367,7 +367,7 @@ class AvatarTTSBloc {
           return const WritePopup();
         }).then((value) {
       if (value == null) return;
-      if(value.toString().isEmpty) return;
+      if (value.toString().isEmpty) return;
       voiceCommandTextCtrl.text = value;
       callGPT(voiceCommandTextCtrl.text);
     });
@@ -397,6 +397,9 @@ class AvatarTTSBloc {
 
       // play intro video
       await setupAvatarVideo();
+
+      // add delay for 1 seconds
+      await Future.delayed(const Duration(seconds: 1));
 
       // start scan face
       await faceController?.startImageStream();
