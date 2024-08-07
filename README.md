@@ -22,3 +22,7 @@ export PATH="$PATH:`pwd`/flutter_3.22.2/bin"
 ## Generate Release Apk
 
 flutter build apk --split-per-abi --no-tree-shake-icons
+
+## run in release mode
+
+flutter run --release --verbose

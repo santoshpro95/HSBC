@@ -80,7 +80,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
             if (snapshot.data! == VoiceCommandState.Listening) return listening();
             if (snapshot.data! == VoiceCommandState.Loading) return const SpinKitPulse(color: AppColors.primaryColor, size: 150);
             if (snapshot.data! == VoiceCommandState.ShowResult) {
-              return Column(mainAxisSize: MainAxisSize.min, children: [answerText(), imageOutput(), finished(), commonQuestions()]);
+              return Column(mainAxisSize: MainAxisSize.min, children: [answerText(), finished(), commonQuestions()]);
             }
             return const SizedBox();
           }),
@@ -299,34 +299,31 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
   // region avatarView
   Widget avatarView() {
     return Center(
-      child: Flexible(
-        fit: FlexFit.loose,
-        child: StreamBuilder<VoiceCommandState>(
-            stream: avatarTTSBloc.voiceCommandCtrl.stream,
-            initialData: VoiceCommandState.Welcome,
-            builder: (context, voiceCommandState) {
-              // if (voiceCommandState.data! != VoiceCommandState.Welcome) {
-              //   return WebViewWidget(controller: avatarTTSBloc.webViewControllerPlus);
-              // }
-              return StreamBuilder<bool>(
-                  stream: avatarTTSBloc.videoLoadingCtrl.stream,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) return const SizedBox();
-                    if (avatarTTSBloc.controller == null) return const SizedBox();
-                    return Container(
-                      alignment: Alignment.center,
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: InkWell(
-                        onTap: voiceCommandState.data! == VoiceCommandState.Welcome ? () => avatarTTSBloc.showAvatar() : null,
-                        child: AspectRatio(
-                          aspectRatio: avatarTTSBloc.controller!.value.aspectRatio,
-                          child: VideoPlayer(avatarTTSBloc.controller!),
-                        ),
+      child: StreamBuilder<VoiceCommandState>(
+          stream: avatarTTSBloc.voiceCommandCtrl.stream,
+          initialData: VoiceCommandState.Welcome,
+          builder: (context, voiceCommandState) {
+            // if (voiceCommandState.data! != VoiceCommandState.Welcome) {
+            //   return WebViewWidget(controller: avatarTTSBloc.webViewControllerPlus);
+            // }
+            return StreamBuilder<bool>(
+                stream: avatarTTSBloc.videoLoadingCtrl.stream,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return const SizedBox();
+                  if (avatarTTSBloc.controller == null) return const SizedBox();
+                  return Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: InkWell(
+                      onTap: voiceCommandState.data! == VoiceCommandState.Welcome ? () => avatarTTSBloc.showAvatar() : null,
+                      child: AspectRatio(
+                        aspectRatio: avatarTTSBloc.controller!.value.aspectRatio,
+                        child: VideoPlayer(avatarTTSBloc.controller!),
                       ),
-                    );
-                  });
-            }),
-      ),
+                    ),
+                  );
+                });
+          }),
     );
   }
 
