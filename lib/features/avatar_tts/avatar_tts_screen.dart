@@ -63,7 +63,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10),
       width: double.maxFinite,
-      child: Column(children: [gptSelection(), avatarView(), commandText(), voiceBtn(), const SizedBox(height: 10)]),
+      child: Column(children: [avatarView(), commandText(), voiceBtn(), const SizedBox(height: 10)]),
     );
   }
 

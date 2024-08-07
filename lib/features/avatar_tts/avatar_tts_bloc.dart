@@ -465,7 +465,7 @@ class AvatarTTSBloc {
   // region getQuery
   String getQuery(String content) {
     var query = """
-      Use the below details about HSBC bank to answer the subsequent question. If the answer cannot be found, write "I don't know."
+      Use the below details about HSBC bank to answer the subsequent question. If the answer cannot be found, write "${AvatarAppStrings.noAnswer}"
       Details:
       \"\"\"
       {${HDFCEng.data}}
@@ -476,7 +476,7 @@ class AvatarTTSBloc {
     // change to cantonese language
     if (languageCtrl.value == Languages.cantonese.name) {
       query = """
-          使用以下有關匯豐銀行的詳細資料來回答後續問題。如果找不到答案，寫"我不知道"。
+          使用以下有關匯豐銀行的詳細資料來回答後續問題。如果找不到答案，寫"${AvatarAppStrings.noAnswer}"。
           詳細資料：
            \"\"\"
                     {${HDFCCanto.data}}

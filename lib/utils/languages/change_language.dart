@@ -20,5 +20,6 @@ class ChangeAvatarLanguage {
     AvatarAppStrings.assistant = language.assistant;
     AvatarAppStrings.answerOfQuestion = language.answerOfQuestion;
     AvatarAppStrings.imageDownload = language.imageDownload;
+    AvatarAppStrings.noAnswer = language.noAnswer;
   }
 }

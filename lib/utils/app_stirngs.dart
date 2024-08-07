@@ -14,4 +14,5 @@ class AvatarAppStrings{
   static String outputFormat = "Output Format";
   static String answerOfQuestion = "You answer questions about the HSBC Bank";
   static String imageDownload = "Image Downloading";
+  static String noAnswer = "I apologize for not having the answer to this particular question. If you need assistance with anything related to HSBC Bank, please feel free to ask.";
 }
