@@ -1,5 +1,8 @@
 class EnglishLang {
   String tapToSpeak = "Tap to Speak";
+  String tapToWrite = "Tap to Write";
+  String askAnything = "Ask anything";
+  String submit = "Submit";
   String finish = "Finish";
   String listening = "Listening";
   String assistant = "Assistant";

@@ -1,5 +1,8 @@
 class AvatarAppStrings{
   static String tapToSpeak = "Tap to Speak";
+  static String tapToWrite = "Tap to Write";
+  static String askAnything = "Ask anything";
+  static String submit = "Submit";
   static String finish = "Finish";
   static String listening = "Listening";
   static String assistant = "Assistant";

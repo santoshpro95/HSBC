@@ -18,6 +18,8 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 
+import 'write_popup.dart';
+
 // region voice Command State
 enum VoiceCommandState { Welcome, Listening, ShowResult, Loading }
 // endregion
@@ -83,6 +85,8 @@ class AvatarTTSBloc {
       await setUpTextToSpeech();
       await speechToTextSetup();
       setupWebpage();
+      ChangeAvatarLanguage(Languages.cantonese.name);
+      if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
       AvatarAppConstants.platform.setMethodCallHandler(didReceiveFromNative);
       addToCartPopUpAnimationController = AnimationController(vsync: state, duration: const Duration(milliseconds: 800));
       if (!context.mounted) return;
@@ -349,6 +353,24 @@ class AvatarTTSBloc {
       print(exception);
       CommonWidgets.infoDialog(context, exception.toString());
     }
+  }
+
+  // endregion
+
+  // region writeCommand
+  void writeCommand() {
+    showModalBottomSheet(
+        backgroundColor: Colors.transparent,
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return const WritePopup();
+        }).then((value) {
+      if (value == null) return;
+      if(value.toString().isEmpty) return;
+      voiceCommandTextCtrl.text = value;
+      callGPT(voiceCommandTextCtrl.text);
+    });
   }
 
   // endregion

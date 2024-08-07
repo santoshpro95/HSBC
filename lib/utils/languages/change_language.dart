@@ -15,6 +15,9 @@ class ChangeAvatarLanguage {
     if (language == null) return;
 
     AvatarAppStrings.tapToSpeak = language.tapToSpeak;
+    AvatarAppStrings.tapToWrite = language.tapToWrite;
+    AvatarAppStrings.askAnything = language.askAnything;
+    AvatarAppStrings.submit = language.submit;
     AvatarAppStrings.finish = language.finish;
     AvatarAppStrings.listening = language.listening;
     AvatarAppStrings.assistant = language.assistant;

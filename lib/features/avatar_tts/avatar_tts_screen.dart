@@ -43,6 +43,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
         builder: (context, snapshot) {
           return Scaffold(
             backgroundColor: Colors.white,
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(
                 backgroundColor: Colors.white,
                 elevation: 10,
@@ -63,7 +64,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 10),
       width: double.maxFinite,
-      child: Column(children: [avatarView(), commandText(), voiceBtn(), const SizedBox(height: 10)]),
+      child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [avatarView(), commandText(), voiceBtn(), const SizedBox(height: 10)])),
     );
   }
 
@@ -112,21 +113,28 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
 
   // region commandText
   Widget commandText() {
-    return Scrollbar(
-      trackVisibility: true,
-      thumbVisibility: true,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: TextField(
-            controller: avatarTTSBloc.voiceCommandTextCtrl,
-            readOnly: true,
-            minLines: 1,
-            maxLines: 3,
-            style: const TextStyle(color: AppColors.primaryColor, overflow: TextOverflow.ellipsis, fontWeight: FontWeight.w600),
-            textAlign: TextAlign.center,
-            decoration: const InputDecoration.collapsed(hintText: '')),
-      ),
-    );
+    return StreamBuilder<VoiceCommandState>(
+        stream: avatarTTSBloc.voiceCommandCtrl.stream,
+        initialData: VoiceCommandState.Welcome,
+        builder: (context, snapshot) {
+          if (snapshot.data! != VoiceCommandState.ShowResult) return const SizedBox();
+          if (avatarTTSBloc.voiceCommandTextCtrl.text.isEmpty) return const SizedBox();
+          return Scrollbar(
+            trackVisibility: true,
+            thumbVisibility: true,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: TextField(
+                  controller: avatarTTSBloc.voiceCommandTextCtrl,
+                  readOnly: true,
+                  minLines: 1,
+                  maxLines: 3,
+                  style: const TextStyle(color: AppColors.primaryColor, overflow: TextOverflow.ellipsis, fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.center,
+                  decoration: const InputDecoration.collapsed(hintText: '')),
+            ),
+          );
+        });
   }
 
   // endregion
@@ -139,11 +147,11 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
           trackVisibility: true,
           thumbVisibility: true,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 15),
             child: TextField(
                 controller: avatarTTSBloc.answerTextCtrl,
                 readOnly: true,
-                maxLines: 5,
+                maxLines: null,
                 minLines: 1,
                 style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500),
                 textAlign: TextAlign.center,
@@ -224,46 +232,68 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
 
   // region finished
   Widget finished() {
-    return Center(
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SlideTransition(
-            position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              width: 200,
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), border: Border.all(width: 1, color: AppColors.primaryColor)),
-              child: CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () => avatarTTSBloc.startListen(),
-                  child: Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SvgPicture.asset(AppImages.micOn,
-                            height: 20, width: 20, colorFilter: const ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn)),
-                        const SizedBox(width: 10),
-                        Text(AvatarAppStrings.tapToSpeak, style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500)),
-                      ],
-                    ),
-                  )),
-            ),
+    return SlideTransition(
+      position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
+      child: Container(
+        height: 60,
+        margin: const EdgeInsets.only(bottom: 20),
+        child: Center(
+          child: ListView(
+            shrinkWrap: true,
+            scrollDirection: Axis.horizontal,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                width: 200,
+                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), border: Border.all(width: 1, color: AppColors.primaryColor)),
+                child: CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () => avatarTTSBloc.writeCommand(),
+                    child: Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SvgPicture.asset(AppImages.write,
+                              height: 20, width: 20, colorFilter: const ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn)),
+                          const SizedBox(width: 10),
+                          Text(AvatarAppStrings.tapToWrite, style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500)),
+                        ],
+                      ),
+                    )),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                width: 200,
+                margin: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), border: Border.all(width: 1, color: AppColors.primaryColor)),
+                child: CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () => avatarTTSBloc.startListen(),
+                    child: Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SvgPicture.asset(AppImages.micOn,
+                              height: 20, width: 20, colorFilter: const ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn)),
+                          const SizedBox(width: 10),
+                          Text(AvatarAppStrings.tapToSpeak, style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500)),
+                        ],
+                      ),
+                    )),
+              ),
+              Container(
+                margin: const EdgeInsets.only(right: 20, left: 20, top: 10, bottom: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: AppColors.primaryColor),
+                child: CupertinoButton(
+                    padding: EdgeInsets.zero,
+                    onPressed: () => avatarTTSBloc.onPressFinish(),
+                    child: Text(AvatarAppStrings.finish, style: const TextStyle(color: Colors.white))),
+              ),
+            ],
           ),
-          SlideTransition(
-            position: Tween<Offset>(begin: const Offset(1.5, 0.0), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
-            child: Container(
-              margin: const EdgeInsets.only(right: 10),
-              padding: const EdgeInsets.symmetric(horizontal: 30),
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: AppColors.primaryColor),
-              child: CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () => avatarTTSBloc.onPressFinish(),
-                  child: Text(AvatarAppStrings.finish, style: const TextStyle(color: Colors.white))),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
