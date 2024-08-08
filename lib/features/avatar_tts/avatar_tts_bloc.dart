@@ -13,7 +13,9 @@ import 'package:hsbc/utils/app_stirngs.dart';
 import 'package:hsbc/utils/common_widgets.dart';
 import 'package:hsbc/utils/knowledgebase/hdfc_canto.dart';
 import 'package:hsbc/utils/knowledgebase/hdfc_eng.dart';
+import 'package:hsbc/utils/languages/cantonese_lang.dart';
 import 'package:hsbc/utils/languages/change_language.dart';
+import 'package:hsbc/utils/languages/english_lang.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
@@ -472,7 +474,7 @@ class AvatarTTSBloc {
       // start loading
       if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Loading);
 
-      if (content != textCommandsInEnglish.last) {
+      if (content != textCommandsInEnglish.last && content != textCommandsInCantonese.last) {
         // get query
         var query = getQuery(content);
 
@@ -518,26 +520,13 @@ class AvatarTTSBloc {
   // region getQuery
   String getQuery(String content) {
     var query = """
-      Use the below details about HSBC bank to answer the subsequent question. If the answer cannot be found, write "${AvatarAppStrings.noAnswer}"
+      Use the below details about HSBC bank to answer the subsequent question. If the answer cannot be found, write "${languageCtrl.value == Languages.cantonese.name ? CantoneseLang().noAnswer : EnglishLang().noAnswer}"
       Details:
       \"\"\"
-      {${HDFCEng.data}}
+      {${languageCtrl.value == Languages.cantonese.name ? HDFCCanto.data : HDFCEng.data}}
       \"\"\"
       
       Question: $content?""";
-
-    // change to cantonese language
-    if (languageCtrl.value == Languages.cantonese.name) {
-      query = """
-          使用以下有關匯豐銀行的詳細資料來回答後續問題。如果找不到答案，寫"${AvatarAppStrings.noAnswer}"。
-          詳細資料：
-           \"\"\"
-                    {${HDFCCanto.data}}
-              \"\"\"
-          
-          問題：$content?""";
-    }
-
     return query;
   }
 
