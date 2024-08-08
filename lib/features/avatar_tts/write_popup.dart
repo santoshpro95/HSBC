@@ -43,7 +43,6 @@ class _WritePopupState extends State<WritePopup> {
         controller: commandTextCtrl,
         keyboardType: TextInputType.text,
         decoration: InputDecoration(
-          labelText: AvatarAppStrings.askAnything,
           hintText: AvatarAppStrings.askAnything,
           contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
           border: const OutlineInputBorder(

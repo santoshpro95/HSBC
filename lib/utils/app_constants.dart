@@ -12,13 +12,9 @@ class AvatarAppConstants {
 
   // english data
   static const englishIntro = "assets/video/Welcome.mp4";
-  static const textCommandsInEnglish = ["What affects the value of money?", "What does 'ESG' stand for?", "Phonebanking Hours"];
-  static const imageCommandsInEnglish = ["Generate a graph of hongkong last 5 year earning vs saving", "Generate graph of last 5 years of HKD currency rate with USD", "Generate a chart of Revenue over the years and compare Customers and Loans last 5 years in HDFC"];
 
   // cantonese data
   static const cantoneseIntro = "assets/video/welcomeCantonese.mp4";
-  static const textCommandsInCantonese = ["甚麼因素會影響錢財的價值？", "ESG」代表甚麼?", "電話銀行營業時間"];
-  static const imageCommandsInCantonese = ["生成一個香港過去 5 年賺錢 vs 儲蓄圖表", "用美元生成過去5年嘅港元匯率圖表", "生成一個多年來嘅收入圖表，同埋比較 HDFC 過去5年嘅客戶同貸款"];
 
   // api key
   static const gptApiKey = "sk-proj-4Q64nWsBoYbnH42SG6kNT3BlbkFJhTqGr8GTQ9DJS58l9gPk";
@@ -29,7 +25,6 @@ class AvatarAppConstants {
   static const gptApiUrl = "$openAiBaseurl/chat/completions";
   static const imageGenerate = "$openAiBaseurl/images/generations";
   static const avatarVideoGenerateApiUrl = "https://x4u5ek2lkmtostpmjvastu646i0bxfxx.lambda-url.us-east-1.on.aws";
-  static const currentExchangeRateApi = "https://v6.exchangerate-api.com/v6/$currentRateOfCurrencyApiKey/latest/USD";
 
   // region Invoke
   // invoke from flutter

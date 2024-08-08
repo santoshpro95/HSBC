@@ -42,10 +42,11 @@ class AvatarTTSBloc {
   bool isProcessing = true;
   FaceCameraController? faceController;
   List<String> languages = [Languages.cantonese.name, Languages.english.name];
-  static const typesOfGPT = ["Text", "Image"];
   late WebViewControllerPlus webViewControllerPlus;
   GPTApiResponse gptApiResponse = GPTApiResponse();
   late AnimationController addToCartPopUpAnimationController;
+  List<String> textCommandsInEnglish = [];
+  List<String> textCommandsInCantonese = [];
 
   // endregion
 
@@ -65,9 +66,7 @@ class AvatarTTSBloc {
   final videoLoadingCtrl = StreamController<bool>.broadcast();
   final voiceCommandCtrl = StreamController<VoiceCommandState>.broadcast();
   final languageCtrl = ValueNotifier<String>(Languages.cantonese.name);
-  final gptSelectionCtrl = ValueNotifier<String>(typesOfGPT.first);
   final loadingCtrl = StreamController<bool>.broadcast();
-  final imageCtrl = ValueNotifier("");
 
   // endregion
 
@@ -84,6 +83,7 @@ class AvatarTTSBloc {
       await initialiseCamera();
       await setUpTextToSpeech();
       await speechToTextSetup();
+      addQuestions();
       setupWebpage();
       ChangeAvatarLanguage(Languages.cantonese.name);
       if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
@@ -95,6 +95,49 @@ class AvatarTTSBloc {
       print(exception);
       if (!context.mounted) return;
       CommonWidgets.infoDialog(context, exception.toString());
+    }
+  }
+
+  // endregion
+
+  // region addQuestions
+  void addQuestions() {
+    try {
+      // add chinese questions
+      textCommandsInCantonese.add("參加滙豐的「股票月供投資計劃」有什麼好處？");
+      textCommandsInCantonese.add("我的信用卡遺失或被盜。我可以在哪裡報失，並申請換卡？");
+      textCommandsInCantonese.add("要從海外銀行電滙（TT）款項到您的香港滙豐銀行戶口，SWIFT 代碼是什麼？還需要提供什麼資料？");
+      textCommandsInCantonese.add("如我身處海外，能否接收由短訊提供之一次性驗證碼以完成電話理財或個人網上理財指示 ?");
+      textCommandsInCantonese.add("我可以如何用手機開立戶口？");
+      textCommandsInCantonese.add("我怎樣可以透過流動理財應用程式來登記個人網上理財？");
+      textCommandsInCantonese.add("最新的納斯達克 (NASDAQ) 是多少？");
+      textCommandsInCantonese.add("今天的恆生指數是多少？");
+      textCommandsInCantonese.add("最新的道瓊工業指數是多少？");
+      textCommandsInCantonese.add("最新上證A&B股水準是多少？");
+      textCommandsInCantonese.add("深證A股和B股最近的股價水準是多少？");
+      textCommandsInCantonese.add("目前的外匯匯率是多少？");
+      textCommandsInCantonese.add("目前的定期存款利率是多少？");
+      textCommandsInCantonese.add("今天氣溫及多讀？");
+
+      // add english questions
+      textCommandsInEnglish.add("What are the key benefits of the Stocks Monthly Investment Plan?");
+      textCommandsInEnglish.add("My credit card is lost or stolen. Where can I report the incident and request a replacement?");
+      textCommandsInEnglish.add(
+          "What is the SWIFT Code and other information needed to do a Telegraphic Transfer (TT) from an overseas bank to your account with HSBC Hong Kong?");
+      textCommandsInEnglish.add(
+          "Can I receive the one-time passcode sent by SMS to complete my instruction submitted via Phone Banking or Personal Internet Banking when I am overseas?");
+      textCommandsInEnglish.add("How do I open an account online?");
+      textCommandsInEnglish.add("How can I register for Personal Internet Banking on HSBC HK App?");
+      textCommandsInEnglish.add("What’s the latest NASDAQ?");
+      textCommandsInEnglish.add("What’s the HSI today?");
+      textCommandsInEnglish.add("What’s the rate for DJIA?");
+      textCommandsInEnglish.add("What are the most recent SSE A&B share levels?");
+      textCommandsInEnglish.add("What are the most recent SZSE A&B share levels?");
+      textCommandsInEnglish.add("What’s the current FX rate?");
+      textCommandsInEnglish.add("What’s the current time deposit rate?");
+      textCommandsInEnglish.add("How’s the weather today");
+    } catch (exception) {
+      print(exception);
     }
   }
 
@@ -335,7 +378,6 @@ class AvatarTTSBloc {
   Future<void> onChangeLanguage(String language) async {
     try {
       // set language
-      imageCtrl.value = "";
       languageCtrl.value = language;
       ChangeAvatarLanguage(language);
       if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
@@ -390,7 +432,6 @@ class AvatarTTSBloc {
       // clear text
       voiceCommandTextCtrl.clear();
       answerTextCtrl.clear();
-      imageCtrl.value = "";
 
       // stop text to speech
       await flutterTts.stop();
@@ -421,7 +462,6 @@ class AvatarTTSBloc {
       if (content.trim().isEmpty) return;
       print("calling Api====>");
       await faceController?.stopImageStream();
-      var exchangeRate = "";
       await flutterTts.stop();
       await controller!.pause();
       await controller!.seekTo(Duration.zero);
@@ -432,30 +472,12 @@ class AvatarTTSBloc {
       // start loading
       if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Loading);
 
-      // check gpt type, if it is image type
-      if (gptSelectionCtrl.value == typesOfGPT.last) {
-        var gptImageResponse = await avatarApiService.gptImageGPTApi(content);
-        if (gptImageResponse.data == null) return;
-        if (gptImageResponse.data!.isEmpty) return;
+      if (content != textCommandsInEnglish.last) {
+        // get query
+        var query = getQuery(content);
 
-        // get answer
-        answerTextCtrl.text = gptImageResponse.data!.first.revisedPrompt!;
-
-        // add image
-        imageCtrl.value = gptImageResponse.data!.first.url!;
-      } else {
-        // check if exchange rate
-        if (content.contains('exchange rate') || content.contains('匯率')) {
-          var exchangeRateResponse = await avatarApiService.currentRateOfExchange();
-          if (exchangeRateResponse.conversionRates != null) {
-            exchangeRate = exchangeRateResponse.conversionRates!.toJson().toString();
-            content = "$content Here are the current exchange rates for 1 USD $exchangeRate ";
-            gptApiResponse = await avatarApiService.gptApi(content);
-          }
-        } else {
-          var query = getQuery(content);
-          gptApiResponse = await avatarApiService.gptApi(query);
-        }
+        // call open AI api
+        gptApiResponse = await avatarApiService.gptApi(query);
 
         // check api response
         if (gptApiResponse.choices == null) return;
@@ -464,9 +486,15 @@ class AvatarTTSBloc {
         // get response
         var gptResponse = gptApiResponse.choices!.first.message!.content!;
         answerTextCtrl.text = gptResponse.replaceAll("#", "").replaceAll("*", "");
-      }
 
-      print(answerTextCtrl.text);
+        print(answerTextCtrl.text);
+      } else {
+        if (languageCtrl.value == Languages.english.name) {
+          answerTextCtrl.text = "It’s currently 34°C, clear with periodic clouds in Hong Kong";
+        } else {
+          answerTextCtrl.text = "香港目前氣溫 34°C，天晴，間中有雲";
+        }
+      }
       // generate video url
       // var avatarVideoResponse = await avatarApiService.generateVideo(answerTextCtrl.text);
       // if (avatarVideoResponse.url != null) playGeneratedAvatarVideo(avatarVideoResponse.url!);
@@ -511,16 +539,6 @@ class AvatarTTSBloc {
     }
 
     return query;
-  }
-
-  // endregion
-
-  // region onChangeOutput
-  void onChangeOutput(String value) {
-    imageCtrl.value = "";
-    voiceCommandTextCtrl.clear();
-    answerTextCtrl.clear();
-    gptSelectionCtrl.value = value;
   }
 
   // endregion
@@ -586,7 +604,6 @@ class AvatarTTSBloc {
       videoLoadingCtrl.close();
       flutterTts.stop();
       faceController?.dispose();
-      imageCtrl.dispose();
       loadingCtrl.close();
       addToCartPopUpAnimationController.dispose();
       await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.sttDispose);
