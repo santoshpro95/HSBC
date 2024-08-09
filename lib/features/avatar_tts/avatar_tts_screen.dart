@@ -61,7 +61,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
 
   // region body
   Widget body() {
-    return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [avatarView(), commandText(), voiceBtn(), const SizedBox(height: 10)]));
+    return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [avatarView(), commandText(), voiceBtn(), const SizedBox(height: 30)]));
   }
 
   // endregion

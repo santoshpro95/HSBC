@@ -118,7 +118,7 @@ class AvatarTTSBloc {
       textCommandsInCantonese.add("深證A股和B股最近的股價水準是多少？");
       textCommandsInCantonese.add("目前的外匯匯率是多少？");
       textCommandsInCantonese.add("目前的定期存款利率是多少？");
-      textCommandsInCantonese.add("今天氣溫及多讀？");
+      textCommandsInCantonese.add("今天氣溫幾多度？");
 
       // add english questions
       textCommandsInEnglish.add("What are the key benefits of the Stocks Monthly Investment Plan?");
@@ -136,7 +136,7 @@ class AvatarTTSBloc {
       textCommandsInEnglish.add("What are the most recent SZSE A&B share levels?");
       textCommandsInEnglish.add("What’s the current FX rate?");
       textCommandsInEnglish.add("What’s the current time deposit rate?");
-      textCommandsInEnglish.add("How’s the weather today");
+      textCommandsInEnglish.add("How’s the weather today?");
     } catch (exception) {
       print(exception);
     }
