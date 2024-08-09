@@ -44,7 +44,7 @@ dependencies:
   flutter_spinkit: ^5.2.1
   permission_handler: ^11.3.1
   flutter_svg: ^2.0.10+1
-  webview_flutter_plus: ^0.4.5
+  webview_flutter: ^4.8.0
 
 dev_dependencies:
   flutter_test:

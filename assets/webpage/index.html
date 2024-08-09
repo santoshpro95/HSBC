@@ -1,17 +1,37 @@
-<!DOCTYPE HTML>
 <html>
+
 <head>
-    <title>webview_flutter_plus</title>
-    <link crossorigin="anonymous" href="style.css" rel="stylesheet">
+    <link href="https://media.myneoma.com/azure/avatar/styles.css" rel="stylesheet">
+    <script src="https://media.myneoma.com/azure/avatar/basic.js"></script>
+    <!-- <script src="./js/basic.js"></script> -->
+    <script
+            src="https://media.myneoma.com/azure/avatar/SpeechSDK-JavaScript-1.38.0/microsoft.cognitiveservices.speech.sdk.bundle-min.js"></script>
+    <!-- <script
+        src="./SpeechSDK-JavaScript-1.38.0/SpeechSDK-JavaScript-1.38.0/microsoft.cognitiveservices.speech.sdk.bundle.js"></script> -->
 </head>
+
 <body>
-<div id="content"></div>
-<div id="testDiv">
-    webview_flutter_plus is an extension of webview_flutter to load HTML, CSS and Javascript even from Assets or String.
-    <br>
-    <br>
-    <br>
-    Please tap the text to see Javascript execution.
+
+<!-- <div id="configuration"></div> -->
+
+<button id="startSession" onclick="window.startSession('a1225a7f52cf45248e4e745296e20ff3','Welcome to Neoma')">Start Session</button>
+<!-- <button id=" speak" onclick="window.speak()" disabled="disabled">Speak</button>
+<button id="stopSpeaking" onclick="window.stopSpeaking()" disabled="disabled">Stop Speaking</button>
+<button id="stopSession" onclick="window.stopSession()" disabled="disabled">Stop Session</button> -->
+<br />
+
+<!-- <h2 id="videoLabel" style="background-color: white; width: 300px;">Avatar Video</h2> -->
+<div id="videoContainer" style="position: relative; width: 960px;">
+    <!-- <div id="overlayArea" style="position: absolute;" hidden="hidden">
+        <p id="overlayText" style="font-size: large;">Live Video</p>
+    </div> -->
+    <div id="remoteVideo"></div>
+    <canvas id="canvas" width="1920" height="1080" style="background-color: black;" hidden="hidden"></canvas>
+    <canvas id="tmpCanvas" width="1920" height="1080" hidden="hidden"></canvas>
 </div>
-<script src="script.js"></script>
+
+<br />
+
 </body>
+
+</html>

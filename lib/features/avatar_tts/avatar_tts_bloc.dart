@@ -18,8 +18,7 @@ import 'package:hsbc/utils/languages/change_language.dart';
 import 'package:hsbc/utils/languages/english_lang.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:video_player/video_player.dart';
-import 'package:webview_flutter_plus/webview_flutter_plus.dart';
-
+import 'package:webview_flutter/webview_flutter.dart';
 import 'write_popup.dart';
 
 // region voice Command State
@@ -44,7 +43,7 @@ class AvatarTTSBloc {
   bool isProcessing = true;
   FaceCameraController? faceController;
   List<String> languages = [Languages.cantonese.name, Languages.english.name];
-  WebViewControllerPlus webViewControllerPlus = WebViewControllerPlus();
+  late WebViewController webViewController;
   GPTApiResponse gptApiResponse = GPTApiResponse();
   late AnimationController addToCartPopUpAnimationController;
   List<String> textCommandsInEnglish = [];
@@ -86,7 +85,7 @@ class AvatarTTSBloc {
       await setUpTextToSpeech();
       await speechToTextSetup();
       addQuestions();
-      setupWebpage("http://www.google.com");
+      setupWebpage();
       ChangeAvatarLanguage(Languages.cantonese.name);
       if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
       AvatarAppConstants.platform.setMethodCallHandler(didReceiveFromNative);
@@ -175,11 +174,30 @@ class AvatarTTSBloc {
   // endregion
 
   // region setupWebpage
-  void setupWebpage(String url) {
+  void setupWebpage() {
     try {
-      webViewControllerPlus.loadRequest(Uri.parse('http://www.google.com'));
-      webViewControllerPlus.setJavaScriptMode(JavaScriptMode.unrestricted);
-      webViewControllerPlus.setBackgroundColor(Colors.transparent);
+      webViewController = WebViewController()
+        ..setJavaScriptMode(JavaScriptMode.unrestricted)
+        ..setBackgroundColor(const Color(0x00000000))
+        ..setNavigationDelegate(
+          NavigationDelegate(
+            onProgress: (int progress) {
+              // Update loading bar.
+              print("progress == $progress");
+            },
+            onPageStarted: (String url) {},
+            onPageFinished: (String url) {
+              // webViewController.runJavaScript('startSession("a1225a7f52cf45248e4e745296e20ff3","Welcome to Neoma");');
+            },
+            onHttpError: (HttpResponseError error) {
+              print("onHttpError response == ${error.response} onHttpError request == ${error.request}");
+            },
+            onWebResourceError: (WebResourceError error) {
+              print("onWebResourceError == ${error.description}");
+            },
+          ),
+        )
+        ..loadFlutterAsset('assets/webpage/index.html');
     } catch (exception) {
       CommonWidgets.infoDialog(context, exception.toString());
     }
@@ -478,9 +496,9 @@ class AvatarTTSBloc {
           answerTextCtrl.text = "香港目前氣溫 34°C，天晴，間中有雲";
         }
       }
-      // generate video url
-      // var avatarVideoResponse = await avatarApiService.generateVideo(answerTextCtrl.text);
-      // if (avatarVideoResponse.url != null) playGeneratedAvatarVideo(avatarVideoResponse.url!);
+
+      // start session
+      // await webViewControllerPlus.runJavaScript('startSession("${AvatarAppConstants.subscriptionKey}",${answerTextCtrl.text});');
       if (!context.mounted) return;
     } on ApiErrorResponse catch (error) {
       if (error.error == null) {
@@ -517,7 +535,6 @@ class AvatarTTSBloc {
   Future<void> readText() async {
     try {
       if (answerTextCtrl.text.isEmpty) return;
-      // using microsoft tool
       await controller!.seekTo(Duration.zero);
       await controller!.setLooping(true);
       await controller!.setVolume(0);

@@ -19,6 +19,7 @@ class AvatarAppConstants {
   // api key
   static const gptApiKey = "sk-proj-4Q64nWsBoYbnH42SG6kNT3BlbkFJhTqGr8GTQ9DJS58l9gPk";
   static const currentRateOfCurrencyApiKey = "eed12f1a8071e4b0319152a3";
+  static const subscriptionKey = "a1225a7f52cf45248e4e745296e20ff3";
 
   // api url
   static const openAiBaseurl = "https://api.openai.com/v1";

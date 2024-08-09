@@ -10,7 +10,7 @@ import 'package:hsbc/utils/app_images.dart';
 import 'package:hsbc/utils/app_stirngs.dart';
 import 'package:lottie/lottie.dart';
 import 'package:video_player/video_player.dart';
-import 'package:webview_flutter_plus/webview_flutter_plus.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class AvatarTTSScreen extends StatefulWidget {
   const AvatarTTSScreen({super.key});
@@ -116,21 +116,19 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
 
   // region answerText
   Widget answerText() {
-    return SingleChildScrollView(
-      child: Scrollbar(
-        trackVisibility: true,
-        thumbVisibility: true,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: TextField(
-              controller: avatarTTSBloc.answerTextCtrl,
-              readOnly: true,
-              maxLines: null,
-              minLines: 1,
-              style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500),
-              textAlign: TextAlign.center,
-              decoration: const InputDecoration.collapsed(hintText: '')),
-        ),
+    return Scrollbar(
+      trackVisibility: true,
+      thumbVisibility: true,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: TextField(
+            controller: avatarTTSBloc.answerTextCtrl,
+            readOnly: true,
+            maxLines: null,
+            minLines: 1,
+            style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500),
+            textAlign: TextAlign.center,
+            decoration: const InputDecoration.collapsed(hintText: '')),
       ),
     );
   }
@@ -286,30 +284,33 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
 
   // region avatarView
   Widget avatarView() {
-    return Center(
-      child: StreamBuilder<VoiceCommandState>(
-          stream: avatarTTSBloc.voiceCommandCtrl.stream,
-          initialData: VoiceCommandState.Welcome,
-          builder: (context, voiceCommandState) {
-            if (voiceCommandState.data! != VoiceCommandState.Welcome) return WebViewWidget(controller: avatarTTSBloc.webViewControllerPlus);
-            return StreamBuilder<bool>(
-                stream: avatarTTSBloc.videoLoadingCtrl.stream,
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) return const SizedBox();
-                  if (avatarTTSBloc.controller == null) return const SizedBox();
-                  return Container(
-                    alignment: Alignment.center,
-                    margin: const EdgeInsets.only(bottom: 10),
-                    child: InkWell(
+    return Container(
+      alignment: Alignment.center,
+      height: MediaQuery.of(context).size.width/1.5,
+      margin: const EdgeInsets.only(bottom: 10),
+      child: Center(
+        child: StreamBuilder<VoiceCommandState>(
+            stream: avatarTTSBloc.voiceCommandCtrl.stream,
+            initialData: VoiceCommandState.Welcome,
+            builder: (context, voiceCommandState) {
+             // if (voiceCommandState.data! != VoiceCommandState.Welcome) {
+              // return WebViewWidget(controller: avatarTTSBloc.webViewController);
+             // }
+              return StreamBuilder<bool>(
+                  stream: avatarTTSBloc.videoLoadingCtrl.stream,
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) return const SizedBox();
+                    if (avatarTTSBloc.controller == null) return const SizedBox();
+                    return InkWell(
                       onTap: voiceCommandState.data! == VoiceCommandState.Welcome ? () => avatarTTSBloc.showAvatar() : null,
                       child: AspectRatio(
                         aspectRatio: avatarTTSBloc.controller!.value.aspectRatio,
                         child: VideoPlayer(avatarTTSBloc.controller!),
                       ),
-                    ),
-                  );
-                });
-          }),
+                    );
+                  });
+            }),
+      ),
     );
   }
 
