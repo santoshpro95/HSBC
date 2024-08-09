@@ -291,9 +291,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
           stream: avatarTTSBloc.voiceCommandCtrl.stream,
           initialData: VoiceCommandState.Welcome,
           builder: (context, voiceCommandState) {
-            // if (voiceCommandState.data! != VoiceCommandState.Welcome) {
-            //   return WebViewWidget(controller: avatarTTSBloc.webViewControllerPlus);
-            // }
+            if (voiceCommandState.data! != VoiceCommandState.Welcome) return WebViewWidget(controller: avatarTTSBloc.webViewControllerPlus);
             return StreamBuilder<bool>(
                 stream: avatarTTSBloc.videoLoadingCtrl.stream,
                 builder: (context, snapshot) {

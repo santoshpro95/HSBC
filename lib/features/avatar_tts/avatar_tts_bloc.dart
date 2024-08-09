@@ -44,7 +44,7 @@ class AvatarTTSBloc {
   bool isProcessing = true;
   FaceCameraController? faceController;
   List<String> languages = [Languages.cantonese.name, Languages.english.name];
-  late WebViewControllerPlus webViewControllerPlus;
+  WebViewControllerPlus webViewControllerPlus = WebViewControllerPlus();
   GPTApiResponse gptApiResponse = GPTApiResponse();
   late AnimationController addToCartPopUpAnimationController;
   List<String> textCommandsInEnglish = [];
@@ -86,7 +86,7 @@ class AvatarTTSBloc {
       await setUpTextToSpeech();
       await speechToTextSetup();
       addQuestions();
-      setupWebpage();
+      setupWebpage("http://www.google.com");
       ChangeAvatarLanguage(Languages.cantonese.name);
       if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
       AvatarAppConstants.platform.setMethodCallHandler(didReceiveFromNative);
@@ -175,36 +175,17 @@ class AvatarTTSBloc {
   // endregion
 
   // region setupWebpage
-  void setupWebpage() {
+  void setupWebpage(String url) {
     try {
-      webViewControllerPlus = WebViewControllerPlus()
-        ..loadFlutterAsset('assets/webpage/index.html')
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setBackgroundColor(const Color(0x00000000))
-        ..setNavigationDelegate(
-          NavigationDelegate(
-            onPageFinished: (url) {
-              webViewControllerPlus.getWebViewHeight().then((value) {
-                var height = int.parse(value.toString()).toDouble();
-
-                _sendDataToJS();
-                if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
-              });
-            },
-          ),
-        );
+      webViewControllerPlus.loadRequest(Uri.parse('http://www.google.com'));
+      webViewControllerPlus.setJavaScriptMode(JavaScriptMode.unrestricted);
+      webViewControllerPlus.setBackgroundColor(Colors.transparent);
     } catch (exception) {
       CommonWidgets.infoDialog(context, exception.toString());
     }
   }
 
   // endregion
-
-  void _sendDataToJS() {
-    // Pass data to JavaScript using `evaluateJavascript`.
-    String encodedData = jsonEncode("Hello wowow");
-    webViewControllerPlus.runJavaScript('showData($encodedData);');
-  }
 
   // region didReceiveFromNative
   Future<dynamic> didReceiveFromNative(MethodCall call) async {
