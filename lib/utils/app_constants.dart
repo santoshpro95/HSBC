@@ -14,7 +14,7 @@ class AvatarAppConstants {
   static const englishIntro = "assets/video/Welcome_EN.mp4";
 
   // cantonese data
-  static const cantoneseIntro = "assets/video/welcome_CN.mp4";
+  static const cantoneseIntro = "assets/video/Welcome_CN.mp4";
 
   // api key
   static const gptApiKey = "sk-proj-4Q64nWsBoYbnH42SG6kNT3BlbkFJhTqGr8GTQ9DJS58l9gPk";
