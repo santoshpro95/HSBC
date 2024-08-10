@@ -198,7 +198,6 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
               ValueListenableBuilder<String>(
                   valueListenable: avatarTTSBloc.languageCtrl,
                   builder: (context, value, _) {
-                    if (value != Languages.english.name) return const SizedBox();
                     return Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10),
                       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
