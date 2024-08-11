@@ -1,10 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hsbc/features/avatar_tts/avatar_tts_bloc.dart';
 import 'package:hsbc/utils/app_colors.dart';
 import 'package:hsbc/utils/app_stirngs.dart';
 
 class WritePopup extends StatefulWidget {
-  const WritePopup({super.key});
+  final String selectedLanguage;
+
+  const WritePopup({super.key, required this.selectedLanguage});
 
   @override
   State<WritePopup> createState() => _WritePopupState();

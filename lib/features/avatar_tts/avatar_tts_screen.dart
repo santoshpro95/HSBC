@@ -61,7 +61,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
 
   // region body
   Widget body() {
-    return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [avatarView(), commandText(), voiceBtn(), const SizedBox(height: 30)]));
+    return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [avatarView(), voiceBtn(), const SizedBox(height: 30)]));
   }
 
   // endregion
@@ -77,7 +77,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
             if (snapshot.data! == VoiceCommandState.Listening) return listening();
             if (snapshot.data! == VoiceCommandState.Loading) return const SpinKitPulse(color: AppColors.primaryColor, size: 150);
             if (snapshot.data! == VoiceCommandState.ShowResult) {
-              return Column(mainAxisSize: MainAxisSize.min, children: [answerText(), finished(), commonQuestions()]);
+              return ListView(padding: EdgeInsets.zero, children: [commandText(), answerText(), finished(), commonQuestions()]);
             }
             return const SizedBox();
           }),
@@ -88,48 +88,35 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
 
   // region commandText
   Widget commandText() {
-    return StreamBuilder<VoiceCommandState>(
-        stream: avatarTTSBloc.voiceCommandCtrl.stream,
-        initialData: VoiceCommandState.Welcome,
-        builder: (context, snapshot) {
-          if (snapshot.data! != VoiceCommandState.ShowResult) return const SizedBox();
-          if (avatarTTSBloc.voiceCommandTextCtrl.text.isEmpty) return const SizedBox();
-          return Scrollbar(
-            trackVisibility: true,
-            thumbVisibility: true,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                  controller: avatarTTSBloc.voiceCommandTextCtrl,
-                  readOnly: true,
-                  minLines: 1,
-                  maxLines: 3,
-                  style: const TextStyle(color: AppColors.primaryColor, overflow: TextOverflow.ellipsis, fontWeight: FontWeight.w600),
-                  textAlign: TextAlign.center,
-                  decoration: const InputDecoration.collapsed(hintText: '')),
-            ),
-          );
-        });
+    if (avatarTTSBloc.voiceCommandTextCtrl.text.isEmpty) return const SizedBox();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: TextField(
+          controller: avatarTTSBloc.voiceCommandTextCtrl,
+          readOnly: true,
+          minLines: 1,
+          maxLines: 3,
+          style: const TextStyle(color: AppColors.primaryColor, overflow: TextOverflow.ellipsis, fontWeight: FontWeight.w600),
+          textAlign: TextAlign.center,
+          decoration: const InputDecoration.collapsed(hintText: '')),
+    );
   }
 
   // endregion
 
   // region answerText
   Widget answerText() {
-    return Scrollbar(
-      trackVisibility: true,
-      thumbVisibility: true,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: TextField(
-            controller: avatarTTSBloc.answerTextCtrl,
-            readOnly: true,
-            maxLines: null,
-            minLines: 1,
-            style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500),
-            textAlign: TextAlign.center,
-            decoration: const InputDecoration.collapsed(hintText: '')),
-      ),
+    if (avatarTTSBloc.answerTextCtrl.text.isEmpty) return const SizedBox();
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 15),
+      child: TextField(
+          controller: avatarTTSBloc.answerTextCtrl,
+          readOnly: true,
+          maxLines: null,
+          minLines: 1,
+          style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500),
+          textAlign: TextAlign.center,
+          decoration: const InputDecoration.collapsed(hintText: '')),
     );
   }
 
@@ -137,32 +124,27 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
 
   // region Common Questions
   Widget commonQuestions() {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20),
-        child: SlideTransition(
-          position: Tween<Offset>(begin: const Offset(0.0, 1.5), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
-          child: ValueListenableBuilder<String>(
-              valueListenable: avatarTTSBloc.languageCtrl,
-              builder: (context, selectedLanguage, _) {
-                // cantonese questions
-                var commands = avatarTTSBloc.textCommandsInCantonese;
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20),
+      child: SlideTransition(
+        position: Tween<Offset>(begin: const Offset(0.0, 1.5), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
+        child: ValueListenableBuilder<String>(
+            valueListenable: avatarTTSBloc.languageCtrl,
+            builder: (context, selectedLanguage, _) {
+              // cantonese questions
+              var commands = avatarTTSBloc.textCommandsInCantonese;
 
-                // questions in english
-                if (selectedLanguage == Languages.english.name) commands = avatarTTSBloc.textCommandsInEnglish;
+              // questions in english
+              if (selectedLanguage == Languages.english.name) commands = avatarTTSBloc.textCommandsInEnglish;
 
-                if (commands.isEmpty) return const SizedBox();
-                return SizedBox(
-                  width: double.maxFinite,
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(vertical: 20),
-                    child: Wrap(
-                      children: <Widget>[for (var item in commands) commonQuestionItem(item)],
-                    ),
-                  ),
-                );
-              }),
-        ),
+              if (commands.isEmpty) return const SizedBox();
+              return SizedBox(
+                width: double.maxFinite,
+                child: Wrap(
+                  children: <Widget>[for (var item in commands) commonQuestionItem(item)],
+                ),
+              );
+            }),
       ),
     );
   }
@@ -285,16 +267,16 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
   Widget avatarView() {
     return Container(
       alignment: Alignment.center,
-      height: MediaQuery.of(context).size.width/1.5,
+      height: MediaQuery.of(context).size.width / 1.5,
       margin: const EdgeInsets.only(bottom: 10),
       child: Center(
         child: StreamBuilder<VoiceCommandState>(
             stream: avatarTTSBloc.voiceCommandCtrl.stream,
             initialData: VoiceCommandState.Welcome,
             builder: (context, voiceCommandState) {
-             // if (voiceCommandState.data! != VoiceCommandState.Welcome) {
+              // if (voiceCommandState.data! != VoiceCommandState.Welcome) {
               // return WebViewWidget(controller: avatarTTSBloc.webViewController);
-             // }
+              // }
               return StreamBuilder<bool>(
                   stream: avatarTTSBloc.videoLoadingCtrl.stream,
                   builder: (context, snapshot) {

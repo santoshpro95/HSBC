@@ -401,19 +401,30 @@ class AvatarTTSBloc {
   // endregion
 
   // region writeCommand
-  void writeCommand() {
-    showModalBottomSheet(
-        backgroundColor: Colors.transparent,
-        context: context,
-        isScrollControlled: true,
-        builder: (context) {
-          return const WritePopup();
-        }).then((value) {
-      if (value == null) return;
-      if (value.toString().isEmpty) return;
-      voiceCommandTextCtrl.text = value;
-      callGPT(voiceCommandTextCtrl.text);
-    });
+  void writeCommand() async {
+    try {
+      await faceController?.stopImageStream();
+      await flutterTts.stop();
+      await controller!.pause();
+      await controller!.seekTo(Duration.zero);
+
+      // open popup
+      if (!context.mounted) return;
+      showModalBottomSheet(
+          backgroundColor: Colors.transparent,
+          context: context,
+          isScrollControlled: true,
+          builder: (context) {
+            return WritePopup(selectedLanguage: languageCtrl.value);
+          }).then((value) {
+        if (value == null) return;
+        if (value.toString().isEmpty) return;
+        voiceCommandTextCtrl.text = value;
+        callGPT(voiceCommandTextCtrl.text);
+      });
+    } catch (exception) {
+      CommonWidgets.infoDialog(context, exception.toString());
+    }
   }
 
   // endregion
