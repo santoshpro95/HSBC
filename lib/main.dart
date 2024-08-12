@@ -6,6 +6,6 @@ import 'features/app.dart';
 
 void main() async {
   await FaceCamera.initialize(); //Add this
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
   runApp(const MyApp());
 }

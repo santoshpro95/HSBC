@@ -32,7 +32,7 @@ class Languages {
   Languages(this.name);
 
   static Languages english = Languages("English");
-  static Languages cantonese = Languages("Cantonese");
+  static Languages cantonese = Languages("廣東話");
 }
 // endregion
 

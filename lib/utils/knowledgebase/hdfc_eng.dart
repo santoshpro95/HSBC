@@ -33,6 +33,8 @@ Until 6pm today, the most recent Dow Jones Industrial Average (DJIA) level’s 3
 
 Here are the most recent SSE A&B share levels, Till August, 2024, SSE A-shares is 3,587.03, and SSE B-shares is 415.72 
 
+Here are the most recent SZSE A&B share levels, The most recent closing levels for: SZSE A-shares is 2,451.79, and SZSE B-shares is 598.42 
+
 Here are the current FX rate, The current Foreign Exchange (FX) Rates: 
 USD/CNY: 6.88 (as of August 1, 2024)
 EUR/USD: 1.10 (as of August 1, 2024) 
