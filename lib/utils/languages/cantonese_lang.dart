@@ -1,6 +1,6 @@
 class CantoneseLang {
   String tapToSpeak = "點擊説話";
-  String tapToWrite = "㩒一下就可以寫";
+  String tapToWrite = "輸入";
   String askAnything = "即管問";
   String submit = "提交";
   String finish = "完成";
