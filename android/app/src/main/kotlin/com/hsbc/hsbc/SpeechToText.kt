@@ -4,13 +4,18 @@ import android.util.Log
 import com.microsoft.cognitiveservices.speech.SpeechConfig
 import com.microsoft.cognitiveservices.speech.SpeechRecognizer
 import com.microsoft.cognitiveservices.speech.audio.AudioConfig
+import com.microsoft.cognitiveservices.speech.audio.AudioProcessingConstants
+import com.microsoft.cognitiveservices.speech.audio.AudioProcessingOptions
 import java.util.concurrent.Executors
+
 
 class SpeechToText {
 
     private var speechConfig: SpeechConfig? = null
     private var microphoneStream: MicrophoneStream? = null
     private var speechReco: SpeechRecognizer? = null
+    private var audioProcessingOptions =
+        AudioProcessingOptions.create(AudioProcessingConstants.AUDIO_INPUT_PROCESSING_DISABLE_NOISE_SUPPRESSION and AudioProcessingConstants.AUDIO_INPUT_PROCESSING_DISABLE_ECHO_CANCELLATION)
 
     companion object {
         private const val activityTag = "SpeechToText"
@@ -26,10 +31,7 @@ class SpeechToText {
         speechConfig?.speechRecognitionLanguage = lang
         destroyMicrophoneStream() // in case it was previously initialized
         microphoneStream = MicrophoneStream()
-        speechReco = SpeechRecognizer(
-            speechConfig,
-            AudioConfig.fromStreamInput(MicrophoneStream.create())
-        )
+        speechReco = SpeechRecognizer(speechConfig, AudioConfig.fromStreamInput(MicrophoneStream.create(), audioProcessingOptions))
     }
 
     fun startReco() {
