@@ -189,9 +189,6 @@ class AvatarTTSBloc {
             onPageFinished: (String url) {
               // webViewController.runJavaScript('startSession("a1225a7f52cf45248e4e745296e20ff3","Welcome to Neoma");');
             },
-            onHttpError: (HttpResponseError error) {
-              print("onHttpError response == ${error.response} onHttpError request == ${error.request}");
-            },
             onWebResourceError: (WebResourceError error) {
               print("onWebResourceError == ${error.description}");
             },
@@ -530,6 +527,7 @@ class AvatarTTSBloc {
   // region getQuery
   String getQuery(String content) {
     var query = """
+      If question about the direction or way to coffee or meeting or elevator then say "${AvatarAppStrings.directionMsg}",
       Use the below details about HSBC bank to answer the subsequent question. If the answer cannot be found, write "${languageCtrl.value == Languages.cantonese.name ? CantoneseLang().noAnswer : EnglishLang().noAnswer}"
       Details:
       \"\"\"

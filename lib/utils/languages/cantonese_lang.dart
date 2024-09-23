@@ -10,4 +10,8 @@ class CantoneseLang {
   String imageDownload = "圖片下載中";
   String noAnswer = "我對呢個問題冇答案表示歉意。如果你需要協助任何同匯豐銀行有關嘅事，歡迎查詢。";
 
+  // indoor data
+  String directionMsg = "呢個係方向";
+
+
 }

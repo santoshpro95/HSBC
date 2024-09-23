@@ -3,6 +3,26 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 class AvatarAppConstants {
+  // Your Situm user and API Key.
+// From 3.1.0 version onwards, situmUser is not needed anymore.
+// const situmUser = "YOUR-SITUM-USER";
+  static const situmApiKey = "2b9357322c441bb29923647fce20aa8348f668b0ebd06e2b79d2847544543ff3";
+
+// Set here the building identifier you want on the map.
+  static const buildingIdentifier = "HSBC";
+
+// Alternatively, you can set an identifier that allows you to remotely configure all map settings.
+// For now, you need to contact Situm to obtain yours.
+  static const remoteIdentifier = null;
+
+  /// A String parameter that allows you to specify which domain will be displayed inside our webview.
+  /// Take a look at [MapViewConfiguration.viewerDomain].
+  static const viewerDomain = "https://map-viewer.situm.com";
+
+  // Set here the API which you will use to retrieve the cartography from.
+  // Take a look at [MapViewConfiguration.apiDomain] and [SitumSdk.setDashboardURL] to learn how to implement it.
+  //const apiDomain = "https://dashboard.situm.com";
+
   // native app channel
   static const channelId = "hsbc";
   static const platform = MethodChannel(channelId);
@@ -18,8 +38,6 @@ class AvatarAppConstants {
 
   // api key
   static const gptApiKey = "sk-proj-4Q64nWsBoYbnH42SG6kNT3BlbkFJhTqGr8GTQ9DJS58l9gPk";
-  static const currentRateOfCurrencyApiKey = "eed12f1a8071e4b0319152a3";
-  static const subscriptionKey = "a1225a7f52cf45248e4e745296e20ff3";
 
   // api url
   static const openAiBaseurl = "https://api.openai.com/v1";

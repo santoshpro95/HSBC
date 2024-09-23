@@ -400,6 +400,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  situm_flutter:
+    dependency: "direct main"
+    description:
+      path: ".."
+      relative: true
+    source: path
+    version: "3.20.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -561,10 +568,10 @@ packages:
     dependency: "direct main"
     description:
       name: webview_flutter
-      sha256: "6869c8786d179f929144b4a1f86e09ac0eddfe475984951ea6c634774c16b522"
+      sha256: d81b68e88cc353e546afb93fb38958e3717282c5ac6e5d3be4a4aef9fc3c1413
       url: "https://pub.dev"
     source: hosted
-    version: "4.8.0"
+    version: "4.5.0"
   webview_flutter_android:
     dependency: transitive
     description:
@@ -585,10 +592,10 @@ packages:
     dependency: transitive
     description:
       name: webview_flutter_wkwebview
-      sha256: "9c62cc46fa4f2d41e10ab81014c1de470a6c6f26051a2de32111b2ee55287feb"
+      sha256: "4d062ad505390ecef1c4bfb6001cd857a51e00912cc9dfb66edb1886a9ebd80c"
       url: "https://pub.dev"
     source: hosted
-    version: "3.14.0"
+    version: "3.10.2"
   xml:
     dependency: transitive
     description:

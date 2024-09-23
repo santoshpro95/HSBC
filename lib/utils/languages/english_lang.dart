@@ -10,4 +10,8 @@ class EnglishLang {
   String imageDownload = "Image Downloading";
   String noAnswer =
       "I apologize for not having the answer to this particular question. If you need assistance with anything related to HSBC Bank, please feel free to ask.";
+
+  // indoor data
+  String directionMsg = "Here is the direction";
+
 }

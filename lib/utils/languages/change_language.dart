@@ -24,5 +24,8 @@ class ChangeAvatarLanguage {
     AvatarAppStrings.answerOfQuestion = language.answerOfQuestion;
     AvatarAppStrings.imageDownload = language.imageDownload;
     AvatarAppStrings.noAnswer = language.noAnswer;
+
+    // indoor
+    AvatarAppStrings.directionMsg = language.directionMsg;
   }
 }

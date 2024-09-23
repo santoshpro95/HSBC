@@ -79,6 +79,9 @@ flutter {
 }
 
 dependencies {
+    // resolving multi dex package
+    implementation 'com.android.support:multidex:1.0.3'
+
     // using for text to speech and speech to text
     implementation "com.microsoft.cognitiveservices.speech:client-sdk:1.38.0"
 }
