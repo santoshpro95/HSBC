@@ -107,6 +107,9 @@ class AvatarTTSBloc {
   void addQuestions() {
     try {
       // add chinese questions
+      textCommandsInCantonese.add("畀我睇到會議嘅方向");
+      textCommandsInCantonese.add("我可以喺邊度搵到咖啡?");
+
       textCommandsInCantonese.add("參加滙豐的「股票月供投資計劃」有什麼好處？");
       textCommandsInCantonese.add("我的信用卡遺失或被盜。我可以在哪裡報失，並申請換卡？");
       textCommandsInCantonese.add("要從海外銀行電滙（TT）款項到您的香港滙豐銀行戶口，SWIFT 代碼是什麼？還需要提供什麼資料？");
@@ -123,6 +126,8 @@ class AvatarTTSBloc {
       textCommandsInCantonese.add("今天氣溫幾多度？");
 
       // add english questions
+      textCommandsInEnglish.add("Show me direction to Meeting");
+      textCommandsInEnglish.add("Show me way to Coffee");
       textCommandsInEnglish.add("What are the key benefits of the Stocks Monthly Investment Plan?");
       textCommandsInEnglish.add("My credit card is lost or stolen. Where can I report the incident and request a replacement?");
       textCommandsInEnglish.add(
@@ -541,7 +546,7 @@ class AvatarTTSBloc {
   // region getQuery
   String getQuery(String content) {
     var query = """
-      If question about the direction or way to coffee or meeting or elevator then say "${AvatarAppStrings.directionMsg}",
+      If question about the direction or way to coffee | meeting | elevator then say "${AvatarAppStrings.directionMsg}",
       Use the below details about HSBC bank to answer the subsequent question. If the answer cannot be found, write "${languageCtrl.value == Languages.cantonese.name ? CantoneseLang().noAnswer : EnglishLang().noAnswer}"
       Details:
       \"\"\"
