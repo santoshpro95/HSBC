@@ -5,11 +5,13 @@ import 'package:face_camera/face_camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:hsbc/features/indoor_nav/indoor_nav_screen.dart';
 import 'package:hsbc/model/api_error_response.dart';
 import 'package:hsbc/model/gpt_api_response.dart';
 import 'package:hsbc/services/api_services/avatar_api_service.dart';
 import 'package:hsbc/utils/app_constants.dart';
 import 'package:hsbc/utils/app_stirngs.dart';
+import 'package:hsbc/utils/common_methods.dart';
 import 'package:hsbc/utils/common_widgets.dart';
 import 'package:hsbc/utils/knowledgebase/hdfc_canto.dart';
 import 'package:hsbc/utils/knowledgebase/hdfc_eng.dart';
@@ -496,7 +498,10 @@ class AvatarTTSBloc {
         var gptResponse = gptApiResponse.choices!.first.message!.content!;
         answerTextCtrl.text = gptResponse.replaceAll("#", "").replaceAll("*", "");
 
-        print(answerTextCtrl.text);
+        // check if it is related to direction
+        if (answerTextCtrl.text.contains(AvatarAppStrings.directionMsg)) {
+          openDirectionScreen();
+        }
       } else {
         if (languageCtrl.value == Languages.english.name) {
           answerTextCtrl.text = "It’s currently 34°C, clear with periodic clouds in Hong Kong";
@@ -520,6 +525,15 @@ class AvatarTTSBloc {
       readText();
       if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
     }
+  }
+
+  // endregion
+
+  // region openDirectionScreen
+  void openDirectionScreen() {
+    var screen = const IndoorNavScreen();
+    var route = CommonMethods.createRouteRTL(screen);
+    Navigator.push(context, route);
   }
 
   // endregion
