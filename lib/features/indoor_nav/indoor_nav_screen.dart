@@ -6,7 +6,9 @@ import 'package:situm_flutter/wayfinding.dart';
 
 // region IndoorNavScreen
 class IndoorNavScreen extends StatefulWidget {
-  const IndoorNavScreen({super.key});
+ final Function? mapViewLoadAction;
+ final String content;
+  const IndoorNavScreen({super.key, this.mapViewLoadAction, required this.content});
 
   @override
   State<IndoorNavScreen> createState() => _IndoorNavScreenState();
@@ -22,7 +24,7 @@ class _IndoorNavScreenState extends State<IndoorNavScreen> {
   // region Init
   @override
   void initState() {
-    indoorNavBloc = IndoorNavBloc(context);
+    indoorNavBloc = IndoorNavBloc(context, widget.mapViewLoadAction, widget.content);
     indoorNavBloc.init();
     super.initState();
   }

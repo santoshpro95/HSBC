@@ -9,19 +9,9 @@ import 'package:situm_flutter/wayfinding.dart';
 class IndoorNavBloc {
   // region Common Variables
   BuildContext context;
-
-  // endregion
-
-  // region Common Variables
-  late SitumSdk situmSdk;
-  List<Poi> pois = [];
-  List<Floor> floors = [];
-  Poi? poiDropdownValue;
-  Floor? floorDropdownValue;
-  bool fitCameraToFloor = false;
-  Function? mapViewLoadAction;
   MapViewController? mapViewController;
-
+  Function? mapViewLoadAction;
+  String content;
   // endregion
 
   // region Controller
@@ -30,90 +20,14 @@ class IndoorNavBloc {
   // endregion
 
   // region | Constructor |
-  IndoorNavBloc(this.context);
+  IndoorNavBloc(this.context, this.mapViewLoadAction, this.content);
 
   // endregion
 
   // region Init
-  void init() {
-    initialiseIndoorMap();
-  }
+  void init() {}
 
   // endregion
-
-  // region initialiseIndoorMap
-  void initialiseIndoorMap() async {
-    situmSdk = SitumSdk();
-    // In case you wan't to use our SDK before initializing our MapView widget,
-    // you can set up your credentials with this line of code :
-    await situmSdk.init();
-    // Authenticate with your account and API key.
-    // You can find yours at https://dashboard.situm.com/accounts/profile
-    await situmSdk.setApiKey(AvatarAppConstants.situmApiKey);
-    // Configure SDK before authenticating.
-    await situmSdk.setConfiguration(ConfigurationOptions(
-        // In case you want to use our remote configuration (https://dashboard.situm.com/settings).
-        // With this practical dashboard you can edit your location request and other SDK configurations
-        // with ease and no code changes.
-        useRemoteConfig: true));
-    // Set up location listeners:
-    situmSdk.onLocationUpdate((location) {
-      print("""SDK> Location changed:
-        Time diff: ${location.timestamp - DateTime.now().millisecondsSinceEpoch}
-        B=${location.buildingIdentifier},
-        F=${location.floorIdentifier},
-        C=${location.coordinate.latitude.toStringAsFixed(5)}, ${location.coordinate.longitude.toStringAsFixed(5)}
-      """);
-    });
-    situmSdk.onLocationStatus((status) {
-      print("Situm> SDK> STATUS: $status");
-    });
-    situmSdk.onLocationError((Error error) {
-      print("Situm> SDK> Error ${error.code}:\n${error.message}");
-    });
-    // Set up listener for events on geofences
-    situmSdk.onEnterGeofences((geofencesResult) {
-      print("Situm> SDK> Enter geofences: ${geofencesResult.geofences}.");
-    });
-    situmSdk.onExitGeofences((geofencesResult) {
-      print("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
-    });
-
-    _downloadPois(AvatarAppConstants.buildingIdentifier);
-    _downloadFloors(AvatarAppConstants.buildingIdentifier);
-  }
-
-  // endregion
-
-  void printWarning(String text) {
-    debugPrint('\x1B[33m$text\x1B[0m');
-  }
-
-  void printError(String text) {
-    debugPrint('\x1B[31m$text\x1B[0m');
-  }
-
-  void _callMapviewLoadAction() {
-    mapViewLoadAction?.call();
-    mapViewLoadAction = null;
-  }
-
-  void _downloadPois(String buildingIdentifier) async {
-    var poiList = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
-    pois = poiList;
-    poiDropdownValue = pois[0];
-    // refresh UI
-    if (!loadingCtrl.isClosed) loadingCtrl.sink.add(false);
-  }
-
-  void _downloadFloors(String buildingIdentifier) async {
-    var info = await situmSdk.fetchBuildingInfo(buildingIdentifier);
-    floors = info.floors;
-    floorDropdownValue = floors[0];
-
-    /// refresh UI
-    if (!loadingCtrl.isClosed) loadingCtrl.sink.add(false);
-  }
 
   void onLoad(MapViewController controller) {
     // Use MapViewController to communicate with the map: methods and callbacks
@@ -128,14 +42,22 @@ class IndoorNavBloc {
     //   useDeadReckoning: false,
     // ));
 
-    _callMapviewLoadAction();
+    mapViewLoadAction?.call();
+    mapViewLoadAction = null;
 
     //Example on how to automatically center the map on the user location when
     // it become available
-    //controller.followUser();
+    // coffee - 643124
+    // meeting - 643782
+
+    if(content.contains("Coffee")){
+      controller.selectPoi("643124");
+    }else if (content.contains("Meeting")){
+      controller.selectPoi("643782");
+    }
 
     controller.onPoiSelected((poiSelectedResult) {
-      printWarning("WYF> Poi SELECTED: ${poiSelectedResult.poi.name}");
+      printWarning("WYF> Poi SELECTED: ${poiSelectedResult.poi.identifier}");
     });
     controller.onPoiDeselected((poiDeselectedResult) {
       printWarning("WYF> Poi DESELECTED: ${poiDeselectedResult.poi.name}");
@@ -145,26 +67,14 @@ class IndoorNavBloc {
       //   navigationRequest.distanceToGoalThreshold = 10.0;
       //   ...
     });
+  }
 
-    // Flutter-Android webview lacks proper support for TTS technology so we
-    // // fallback to third-party libraries
-    // controller.onSpeakAloudText((speakaloudTextResult) async {
-    //   print("Situm > SDK > Speak aloud: ${speakaloudTextResult.text}");
-    //   if (speakaloudTextResult.lang != null) {
-    //     flutterTts.setLanguage(speakaloudTextResult.lang!);
-    //   }
-    //   if (speakaloudTextResult.rate != null) {
-    //     flutterTts.setSpeechRate(speakaloudTextResult.rate!);
-    //   }
-    //   if (speakaloudTextResult.volume != null) {
-    //     flutterTts.setVolume(speakaloudTextResult.volume!);
-    //   }
-    //   if (speakaloudTextResult.pitch != null) {
-    //     flutterTts.setPitch(speakaloudTextResult.pitch!);
-    //   }
-    //
-    //   await flutterTts.speak(speakaloudTextResult.text);
-    // });
+  void printWarning(String text) {
+    debugPrint('\x1B[33m$text\x1B[0m');
+  }
+
+  void printError(String text) {
+    debugPrint('\x1B[31m$text\x1B[0m');
   }
 
   // region Dispose
