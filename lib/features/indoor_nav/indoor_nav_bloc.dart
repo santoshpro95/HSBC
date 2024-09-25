@@ -58,10 +58,13 @@ class IndoorNavBloc {
  //    }
  //        """);
 
-    webViewController.runJavaScript("javascript:(function() { " +
-        "var head = document.getElementsByClassName('free-trial-banner')[0].style.display='none';"
+    webViewController.runJavaScriptReturningResult("""
+        for (let element of document.getElementsByClassName("classname")){
+   element.style.display="none";
+}
+        """);
 
-            "})()");
+
   }
 
   // endregion
