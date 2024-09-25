@@ -49,14 +49,19 @@ class IndoorNavBloc {
   void onPageFinished(String page) {
     print("on finished url == $page");
 
-    // class = free-trial-banner
-    webViewController.runJavaScript("""
- var divsToHide = document.getElementsByClassName("free-trial-banner"); //divsToHide is an array
-    for(var i = 0; i < divsToHide.length; i++){
-        divsToHide[i].style.visibility = "hidden"; // or
-        divsToHide[i].style.display = "none"; // depending on what you're doing
-    }
-        """);
+ //    // class = free-trial-banner
+ //    webViewController.runJavaScript("""
+ // var divsToHide = document.getElementsByClassName("free-trial-banner"); //divsToHide is an array
+ //    for(var i = 0; i < divsToHide.length; i++){
+ //        divsToHide[i].style.visibility = "hidden"; // or
+ //        divsToHide[i].style.display = "none"; // depending on what you're doing
+ //    }
+ //        """);
+
+    webViewController.runJavaScript("javascript:(function() { " +
+        "var head = document.getElementsByClassName('free-trial-banner')[0].style.display='none';"
+
+            "})()");
   }
 
   // endregion

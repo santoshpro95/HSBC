@@ -475,9 +475,9 @@ class AvatarTTSBloc {
 
         // check if it is related to direction
         if (answerTextCtrl.text.contains(AvatarAppStrings.directionMsg)) {
-          if (content.contains("Meeting")) {
+          if (content.contains("Meeting") || content.contains("會議")) {
             openDirectionScreen(AvatarAppConstants.meetingPOI);
-          } else if (content.contains("Coffee")) {
+          } else if (content.contains("Coffee") || content.contains('咖啡')) {
             openDirectionScreen(AvatarAppConstants.coffeePOI);
           }
         }
