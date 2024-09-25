@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hsbc/features/indoor_nav/indoor_nav_bloc.dart';
 import 'package:hsbc/utils/app_colors.dart';
@@ -46,6 +47,7 @@ class _IndoorNavScreenState extends State<IndoorNavScreen> {
     return Scaffold(
       appBar: AppBar(title: Text(AvatarAppStrings.indoorMap)),
       backgroundColor: Colors.white,
+
       body: body(),
     );
   }

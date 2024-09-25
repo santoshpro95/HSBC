@@ -38,33 +38,25 @@ class IndoorNavBloc {
 
   // endregion
 
+  // region run JS
+  void runJS() async {
+    await webViewController.runJavaScript("document.querySelector('.free-trial-banner').style.display = 'none'");
+  }
+
+  // endregion
+
   // region onProgress
   void onProgress(int progress) {
     if (!progressLoadingCtrl.isClosed) progressLoadingCtrl.sink.add(progress);
+    print("progress == $progress");
+    if (progress == 100) runJS();
   }
 
   // endregion
 
   // region onPageFinished
-  void onPageFinished(String page) {
+  void onPageFinished(String page) async {
     print("on finished url == $page");
-
- //    // class = free-trial-banner
- //    webViewController.runJavaScript("""
- // var divsToHide = document.getElementsByClassName("free-trial-banner"); //divsToHide is an array
- //    for(var i = 0; i < divsToHide.length; i++){
- //        divsToHide[i].style.visibility = "hidden"; // or
- //        divsToHide[i].style.display = "none"; // depending on what you're doing
- //    }
- //        """);
-
-    webViewController.runJavaScriptReturningResult("""
-        for (let element of document.getElementsByClassName("classname")){
-   element.style.display="none";
-}
-        """);
-
-
   }
 
   // endregion
