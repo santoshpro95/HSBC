@@ -458,7 +458,24 @@ class AvatarTTSBloc {
       // start loading
       if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.Loading);
 
-      if (content != textCommandsInEnglish.last && content != textCommandsInCantonese.last) {
+      // check if it is related to direction
+      if (content == textCommandsInEnglish[0] ||
+          content == textCommandsInEnglish[1] ||
+          content == textCommandsInCantonese[0] ||
+          content == textCommandsInCantonese[1]) {
+        answerTextCtrl.text = AvatarAppStrings.directionMsg;
+        if (content.contains("Meeting") || content.contains("會議")) {
+          openDirectionScreen(AvatarAppConstants.meetingPOI);
+        } else if (content.contains("Coffee") || content.contains('咖啡')) {
+          openDirectionScreen(AvatarAppConstants.coffeePOI);
+        }
+      } else if (content == textCommandsInEnglish.last || content == textCommandsInCantonese.last) {
+        if (languageCtrl.value == Languages.english.name) {
+          answerTextCtrl.text = "It’s currently 34°C, clear with periodic clouds in Hong Kong";
+        } else {
+          answerTextCtrl.text = "香港目前氣溫 34°C，天晴，間中有雲";
+        }
+      } else {
         // get query
         var query = getQuery(content);
 
@@ -472,25 +489,8 @@ class AvatarTTSBloc {
         // get response
         var gptResponse = gptApiResponse.choices!.first.message!.content!;
         answerTextCtrl.text = gptResponse.replaceAll("#", "").replaceAll("*", "");
-
-        // check if it is related to direction
-        if (answerTextCtrl.text.contains(AvatarAppStrings.directionMsg)) {
-          if (content.contains("Meeting") || content.contains("會議")) {
-            openDirectionScreen(AvatarAppConstants.meetingPOI);
-          } else if (content.contains("Coffee") || content.contains('咖啡')) {
-            openDirectionScreen(AvatarAppConstants.coffeePOI);
-          }
-        }
-      } else {
-        if (languageCtrl.value == Languages.english.name) {
-          answerTextCtrl.text = "It’s currently 34°C, clear with periodic clouds in Hong Kong";
-        } else {
-          answerTextCtrl.text = "香港目前氣溫 34°C，天晴，間中有雲";
-        }
       }
 
-      // start session
-      // await webViewControllerPlus.runJavaScript('startSession("${AvatarAppConstants.subscriptionKey}",${answerTextCtrl.text});');
       if (!context.mounted) return;
     } on ApiErrorResponse catch (error) {
       if (error.error == null) {
