@@ -19,7 +19,6 @@ import 'package:hsbc/utils/languages/cantonese_lang.dart';
 import 'package:hsbc/utils/languages/change_language.dart';
 import 'package:hsbc/utils/languages/english_lang.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:situm_flutter/sdk.dart';
 import 'package:video_player/video_player.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'write_popup.dart';
@@ -46,22 +45,10 @@ class AvatarTTSBloc {
   bool isProcessing = true;
   FaceCameraController? faceController;
   List<String> languages = [Languages.cantonese.name, Languages.english.name];
-  late WebViewController webViewController;
   GPTApiResponse gptApiResponse = GPTApiResponse();
   late AnimationController addToCartPopUpAnimationController;
   List<String> textCommandsInEnglish = [];
   List<String> textCommandsInCantonese = [];
-
-  // endregion
-
-  // region Common Variables for Indoor Map
-  late SitumSdk situmSdk;
-  List<Poi> pois = [];
-  List<Floor> floors = [];
-  Poi? poiDropdownValue;
-  Floor? floorDropdownValue;
-  bool fitCameraToFloor = false;
-  Function? mapViewLoadAction;
 
   // endregion
 
@@ -82,6 +69,7 @@ class AvatarTTSBloc {
   final voiceCommandCtrl = StreamController<VoiceCommandState>.broadcast();
   final languageCtrl = ValueNotifier<String>(Languages.cantonese.name);
   final loadingCtrl = StreamController<bool>.broadcast();
+  final indoorCtrl = StreamController<bool>.broadcast();
 
   // endregion
 
@@ -99,8 +87,6 @@ class AvatarTTSBloc {
       await setUpTextToSpeech();
       await speechToTextSetup();
       addQuestions();
-      setupWebpage();
-      initialiseIndoorMap();
       ChangeAvatarLanguage(Languages.cantonese.name);
       if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
       AvatarAppConstants.platform.setMethodCallHandler(didReceiveFromNative);
@@ -115,67 +101,6 @@ class AvatarTTSBloc {
   }
 
   // endregion
-
-  // region initialiseIndoorMap
-  Future<void> initialiseIndoorMap() async {
-    situmSdk = SitumSdk();
-    // In case you wan't to use our SDK before initializing our MapView widget,
-    // you can set up your credentials with this line of code :
-    await situmSdk.init();
-    // Authenticate with your account and API key.
-    // You can find yours at https://dashboard.situm.com/accounts/profile
-    await situmSdk.setApiKey(AvatarAppConstants.situmApiKey);
-    // Configure SDK before authenticating.
-    await situmSdk.setConfiguration(ConfigurationOptions(
-        // In case you want to use our remote configuration (https://dashboard.situm.com/settings).
-        // With this practical dashboard you can edit your location request and other SDK configurations
-        // with ease and no code changes.
-        useRemoteConfig: true));
-    // Set up location listeners:
-    situmSdk.onLocationUpdate((location) {
-      print("""SDK> Location changed:
-        Time diff: ${location.timestamp - DateTime.now().millisecondsSinceEpoch}
-        B=${location.buildingIdentifier},
-        F=${location.floorIdentifier},
-        C=${location.coordinate.latitude.toStringAsFixed(5)}, ${location.coordinate.longitude.toStringAsFixed(5)}
-      """);
-    });
-    situmSdk.onLocationStatus((status) {
-      print("Situm> SDK> STATUS: $status");
-    });
-    situmSdk.onLocationError((error) {
-      print("Situm> SDK> Error ${error.code}:\n${error.message}");
-    });
-    // Set up listener for events on geofences
-    situmSdk.onEnterGeofences((geofencesResult) {
-      print("Situm> SDK> Enter geofences: ${geofencesResult.geofences}.");
-    });
-    situmSdk.onExitGeofences((geofencesResult) {
-      print("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
-    });
-
-    _downloadPois(AvatarAppConstants.buildingIdentifier);
-    _downloadFloors(AvatarAppConstants.buildingIdentifier);
-  }
-
-  // endregion
-
-  void _downloadPois(String buildingIdentifier) async {
-    var poiList = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
-    pois = poiList;
-    poiDropdownValue = pois[0];
-    // refresh UI
-    if (!loadingCtrl.isClosed) loadingCtrl.sink.add(false);
-  }
-
-  void _downloadFloors(String buildingIdentifier) async {
-    var info = await situmSdk.fetchBuildingInfo(buildingIdentifier);
-    floors = info.floors;
-    floorDropdownValue = floors[0];
-
-    /// refresh UI
-    if (!loadingCtrl.isClosed) loadingCtrl.sink.add(false);
-  }
 
   // region addQuestions
   void addQuestions() {
@@ -250,35 +175,6 @@ class AvatarTTSBloc {
         builder: (BuildContext context) {
           return CommonWidgets.fullImageView(imageUrl, context);
         });
-  }
-
-  // endregion
-
-  // region setupWebpage
-  void setupWebpage() {
-    try {
-      webViewController = WebViewController()
-        ..setJavaScriptMode(JavaScriptMode.unrestricted)
-        ..setBackgroundColor(const Color(0x00000000))
-        ..setNavigationDelegate(
-          NavigationDelegate(
-            onProgress: (int progress) {
-              // Update loading bar.
-              print("progress == $progress");
-            },
-            onPageStarted: (String url) {},
-            onPageFinished: (String url) {
-              // webViewController.runJavaScript('startSession("a1225a7f52cf45248e4e745296e20ff3","Welcome to Neoma");');
-            },
-            onWebResourceError: (WebResourceError error) {
-              print("onWebResourceError == ${error.description}");
-            },
-          ),
-        )
-        ..loadFlutterAsset('assets/webpage/index.html');
-    } catch (exception) {
-      CommonWidgets.infoDialog(context, exception.toString());
-    }
   }
 
   // endregion
@@ -579,7 +475,11 @@ class AvatarTTSBloc {
 
         // check if it is related to direction
         if (answerTextCtrl.text.contains(AvatarAppStrings.directionMsg)) {
-          openDirectionScreen(content);
+          if (content.contains("Meeting")) {
+            openDirectionScreen(AvatarAppConstants.meetingPOI);
+          } else if (content.contains("Coffee")) {
+            openDirectionScreen(AvatarAppConstants.coffeePOI);
+          }
         }
       } else {
         if (languageCtrl.value == Languages.english.name) {
@@ -609,8 +509,8 @@ class AvatarTTSBloc {
   // endregion
 
   // region openDirectionScreen
-  void openDirectionScreen(String content) {
-    var screen = IndoorNavScreen(mapViewLoadAction: mapViewLoadAction, content: content);
+  void openDirectionScreen(String navigateId) async {
+    var screen = IndoorNavScreen(navigateToId: navigateId, floorId: AvatarAppConstants.firstFloorId);
     var route = CommonMethods.createRouteRTL(screen);
     Navigator.push(context, route);
   }

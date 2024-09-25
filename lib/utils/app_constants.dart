@@ -3,13 +3,16 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 class AvatarAppConstants {
-  // Your Situm user and API Key.
-// From 3.1.0 version onwards, situmUser is not needed anymore.
-// const situmUser = "YOUR-SITUM-USER";
-  static const situmApiKey = "2b9357322c441bb29923647fce20aa8348f668b0ebd06e2b79d2847544543ff3";
 
-// Set here the building identifier you want on the map.
-  static const buildingIdentifier = "HSBC";
+  // Indoor Map Config
+  static const situmApiKey = "2b9357322c441bb29923647fce20aa8348f668b0ebd06e2b79d2847544543ff3";
+  static const domain = "dashboard.situm.com";
+  static const buildingId = "17252";
+  static const firstFloorId= "56252";
+
+  // point of interest Id
+  static const coffeePOI = "643124";
+  static const meetingPOI = "643782";
 
 // Alternatively, you can set an identifier that allows you to remotely configure all map settings.
 // For now, you need to contact Situm to obtain yours.

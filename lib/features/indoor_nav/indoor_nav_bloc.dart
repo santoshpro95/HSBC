@@ -1,81 +1,65 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:hsbc/utils/app_constants.dart';
-import 'package:situm_flutter/sdk.dart';
-import 'package:situm_flutter/wayfinding.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class IndoorNavBloc {
   // region Common Variables
   BuildContext context;
-  MapViewController? mapViewController;
-  Function? mapViewLoadAction;
-  String content;
+  String navigateToId;
+  String floorId;
+  WebViewController webViewController = WebViewController();
+
   // endregion
 
   // region Controller
-  final loadingCtrl = StreamController<bool>.broadcast();
+  final webLoadingCtrl = StreamController<bool>.broadcast();
+  final progressLoadingCtrl = StreamController<int>.broadcast();
 
   // endregion
 
   // region | Constructor |
-  IndoorNavBloc(this.context, this.mapViewLoadAction, this.content);
+  IndoorNavBloc(this.context, this.navigateToId, this.floorId);
 
   // endregion
 
   // region Init
-  void init() {}
+  void init() async {
+    var url =
+        "https://map-viewer.situm.com/?apikey=${AvatarAppConstants.situmApiKey}&domain=${AvatarAppConstants.domain}&mode=embed&deviceId=564648026015&wl=true&lng=en&buildingid=${AvatarAppConstants.buildingId}&floorid=$floorId&navigation_to=$navigateToId&poiid=$navigateToId&navigation_from=643123";
+
+    await webViewController.setJavaScriptMode(JavaScriptMode.unrestricted);
+    await webViewController.loadRequest(Uri.parse(url));
+    webViewController
+        .setNavigationDelegate(NavigationDelegate(onProgress: (progress) => onProgress(progress), onPageFinished: (page) => onPageFinished(page)));
+
+    if (!webLoadingCtrl.isClosed) webLoadingCtrl.sink.add(true);
+  }
 
   // endregion
 
-  void onLoad(MapViewController controller) {
-    // Use MapViewController to communicate with the map: methods and callbacks
-    // are available to perform actions and listen to events (e.g., listen to
-    // POI selections, intercept navigation options, navigate to POIs, etc.).
-    // You need to wait until the map is properly loaded to do so.
-    mapViewController = controller;
+  // region onProgress
+  void onProgress(int progress) {
+    if (!progressLoadingCtrl.isClosed) progressLoadingCtrl.sink.add(progress);
+  }
 
-    //Example on how to automatically launch positioning when opening the map.
-    // situmSdk.requestLocationUpdates(LocationRequest(
-    //   buildingIdentifier: buildingIdentifier, //"-1"
-    //   useDeadReckoning: false,
-    // ));
+  // endregion
 
-    mapViewLoadAction?.call();
-    mapViewLoadAction = null;
+  // region onPageFinished
+  void onPageFinished(String page) {
+    print("on finished url == $page");
 
-    //Example on how to automatically center the map on the user location when
-    // it become available
-    // coffee - 643124
-    // meeting - 643782
-
-    if(content.contains("Coffee")){
-      controller.selectPoi("643124");
-    }else if (content.contains("Meeting")){
-      controller.selectPoi("643782");
+    // class = free-trial-banner
+    webViewController.runJavaScript("""
+ var divsToHide = document.getElementsByClassName("free-trial-banner"); //divsToHide is an array
+    for(var i = 0; i < divsToHide.length; i++){
+        divsToHide[i].style.visibility = "hidden"; // or
+        divsToHide[i].style.display = "none"; // depending on what you're doing
     }
-
-    controller.onPoiSelected((poiSelectedResult) {
-      printWarning("WYF> Poi SELECTED: ${poiSelectedResult.poi.identifier}");
-    });
-    controller.onPoiDeselected((poiDeselectedResult) {
-      printWarning("WYF> Poi DESELECTED: ${poiDeselectedResult.poi.name}");
-    });
-    controller.onNavigationRequestInterceptor((navigationRequest) {
-      printWarning("WYF> Navigation interceptor: ${navigationRequest.toMap()}");
-      //   navigationRequest.distanceToGoalThreshold = 10.0;
-      //   ...
-    });
+        """);
   }
 
-  void printWarning(String text) {
-    debugPrint('\x1B[33m$text\x1B[0m');
-  }
-
-  void printError(String text) {
-    debugPrint('\x1B[31m$text\x1B[0m');
-  }
+  // endregion
 
   // region Dispose
   void dispose() {}

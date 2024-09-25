@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:hsbc/features/indoor_nav/indoor_nav_bloc.dart';
-import 'package:hsbc/utils/app_constants.dart';
+import 'package:hsbc/utils/app_colors.dart';
 import 'package:hsbc/utils/app_stirngs.dart';
-import 'package:situm_flutter/wayfinding.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 // region IndoorNavScreen
 class IndoorNavScreen extends StatefulWidget {
- final Function? mapViewLoadAction;
- final String content;
-  const IndoorNavScreen({super.key, this.mapViewLoadAction, required this.content});
+ final String navigateToId;
+ final String floorId;
+  const IndoorNavScreen({super.key, required this.navigateToId, required this.floorId});
 
   @override
   State<IndoorNavScreen> createState() => _IndoorNavScreenState();
@@ -24,7 +24,7 @@ class _IndoorNavScreenState extends State<IndoorNavScreen> {
   // region Init
   @override
   void initState() {
-    indoorNavBloc = IndoorNavBloc(context, widget.mapViewLoadAction, widget.content);
+    indoorNavBloc = IndoorNavBloc(context, widget.navigateToId, widget.floorId);
     indoorNavBloc.init();
     super.initState();
   }
@@ -54,29 +54,36 @@ class _IndoorNavScreenState extends State<IndoorNavScreen> {
 
   // region body
   Widget body() {
-    return Stack(children: [
-      StreamBuilder<bool>(
-          stream: indoorNavBloc.loadingCtrl.stream,
-          builder: (context, snapshot) {
-            return MapView(
-              key: const Key("situm_map"),
-              configuration: MapViewConfiguration(
-                // Your Situm credentials.
-                // Copy config.dart.example if you haven't already.
-                situmApiKey: AvatarAppConstants.situmApiKey,
-                // Set your building identifier:
-                buildingIdentifier: AvatarAppConstants.buildingIdentifier,
-                // Your remote identifier, if any:
-                remoteIdentifier: AvatarAppConstants.remoteIdentifier,
-                // The viewer domain:
-                viewerDomain: AvatarAppConstants.viewerDomain,
-              ),
-              // Load callback:
-              onLoad: indoorNavBloc.onLoad,
-            );
-          }),
-      Container(height: 40, color: Colors.white)
-    ]);
+    return Column(
+      children: [
+        loadingProgress(),
+        Expanded(
+          child: StreamBuilder<bool>(
+            stream: indoorNavBloc.webLoadingCtrl.stream,
+            builder: (context, snapshot) {
+              return WebViewWidget(controller: indoorNavBloc.webViewController);
+            }
+          ),
+        ),
+      ],
+    );
   }
+// endregion
+
+// region loadingProgress
+Widget loadingProgress(){
+    return StreamBuilder<int>(
+      stream: indoorNavBloc.progressLoadingCtrl.stream,
+      initialData: 1,
+      builder: (context, snapshot) {
+        return SizedBox(
+            height: 2,
+            child: LinearProgressIndicator(color: AppColors.purpleColor,
+            backgroundColor: AppColors.greyColor,
+              value: snapshot.data!/10,
+            ));
+      }
+    );
+}
 // endregion
 }
