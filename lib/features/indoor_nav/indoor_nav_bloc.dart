@@ -14,7 +14,6 @@ class IndoorNavBloc {
 
   // region Controller
   final webLoadingCtrl = StreamController<bool>.broadcast();
-  final progressLoadingCtrl = StreamController<int>.broadcast();
 
   // endregion
 
@@ -33,7 +32,6 @@ class IndoorNavBloc {
     webViewController
         .setNavigationDelegate(NavigationDelegate(onProgress: (progress) => onProgress(progress), onPageFinished: (page) => onPageFinished(page)));
 
-    if (!webLoadingCtrl.isClosed) webLoadingCtrl.sink.add(true);
   }
 
   // endregion
@@ -47,7 +45,6 @@ class IndoorNavBloc {
 
   // region onProgress
   void onProgress(int progress) {
-    if (!progressLoadingCtrl.isClosed) progressLoadingCtrl.sink.add(progress);
     print("progress == $progress");
     if (progress == 100) runJS();
   }
@@ -55,8 +52,9 @@ class IndoorNavBloc {
   // endregion
 
   // region onPageFinished
-  void onPageFinished(String page) async {
+  void onPageFinished(String page) {
     print("on finished url == $page");
+    if (!webLoadingCtrl.isClosed) webLoadingCtrl.sink.add(false);
   }
 
   // endregion
