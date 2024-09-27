@@ -489,6 +489,15 @@ class AvatarTTSBloc {
         // get response
         var gptResponse = gptApiResponse.choices!.first.message!.content!;
         answerTextCtrl.text = gptResponse.replaceAll("#", "").replaceAll("*", "");
+
+        // check direction
+        if(answerTextCtrl.text.toLowerCase().contains(AvatarAppStrings.directionMsg.toLowerCase())){
+          if (content.contains("Meeting") || content.contains("會議")) {
+            openDirectionScreen(AvatarAppConstants.meetingPOI);
+          } else if (content.contains("Coffee") || content.contains('咖啡')) {
+            openDirectionScreen(AvatarAppConstants.coffeePOI);
+          }
+        }
       }
 
       if (!context.mounted) return;
@@ -520,7 +529,7 @@ class AvatarTTSBloc {
   // region getQuery
   String getQuery(String content) {
     var query = """
-      If question about the direction or way to coffee | meeting | elevator then say "${AvatarAppStrings.directionMsg}",
+      Anything ask about Coffee or Meeting then say "${AvatarAppStrings.directionMsg}",
       Use the below details about HSBC bank to answer the subsequent question. If the answer cannot be found, write "${languageCtrl.value == Languages.cantonese.name ? CantoneseLang().noAnswer : EnglishLang().noAnswer}"
       Details:
       \"\"\"
