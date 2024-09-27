@@ -491,10 +491,10 @@ class AvatarTTSBloc {
         answerTextCtrl.text = gptResponse.replaceAll("#", "").replaceAll("*", "");
 
         // check direction
-        if(answerTextCtrl.text.toLowerCase().contains(AvatarAppStrings.directionMsg.toLowerCase())){
-          if (content.contains("Meeting") || content.contains("會議")) {
+        if (answerTextCtrl.text.contains(AvatarAppStrings.directionMsg)) {
+          if (content.toLowerCase().contains("meeting") || content.contains("會議")) {
             openDirectionScreen(AvatarAppConstants.meetingPOI);
-          } else if (content.contains("Coffee") || content.contains('咖啡')) {
+          } else if (content.toLowerCase().contains("coffee") || content.contains('咖啡')) {
             openDirectionScreen(AvatarAppConstants.coffeePOI);
           }
         }
