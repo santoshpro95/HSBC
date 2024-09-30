@@ -24,7 +24,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'write_popup.dart';
 
 // region voice Command State
-enum VoiceCommandState { Welcome, Listening, ShowResult, Loading }
+enum VoiceCommandState { Welcome, Listening, ShowResult, Loading, IndoorMap }
 // endregion
 
 // region Languages
@@ -49,6 +49,7 @@ class AvatarTTSBloc {
   late AnimationController addToCartPopUpAnimationController;
   List<String> textCommandsInEnglish = [];
   List<String> textCommandsInCantonese = [];
+  WebViewController webViewController = WebViewController();
 
   // endregion
 
@@ -69,7 +70,6 @@ class AvatarTTSBloc {
   final voiceCommandCtrl = StreamController<VoiceCommandState>.broadcast();
   final languageCtrl = ValueNotifier<String>(Languages.cantonese.name);
   final loadingCtrl = StreamController<bool>.broadcast();
-  final indoorCtrl = StreamController<bool>.broadcast();
 
   // endregion
 
@@ -519,9 +519,38 @@ class AvatarTTSBloc {
 
   // region openDirectionScreen
   void openDirectionScreen(String navigateId) async {
-    var screen = IndoorNavScreen(navigateToId: navigateId, floorId: AvatarAppConstants.firstFloorId);
-    var route = CommonMethods.createRouteRTL(screen);
-    Navigator.push(context, route);
+    var url =
+        "https://map-viewer.situm.com/?apikey=${AvatarAppConstants.situmApiKey}&domain=${AvatarAppConstants.domain}&mode=embed&deviceId=564648026015&wl=true&lng=en&buildingid=${AvatarAppConstants.buildingId}&floorid=${AvatarAppConstants.firstFloorId}&navigation_to=$navigateId&poiid=$navigateId&navigation_from=643123";
+    await webViewController.setJavaScriptMode(JavaScriptMode.unrestricted);
+    await webViewController.loadRequest(Uri.parse(url));
+    await webViewController.setNavigationDelegate(NavigationDelegate(onProgress: (progress) => onProgress(progress)));
+    if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.IndoorMap);
+    // var screen = IndoorNavScreen(navigateToId: navigateId, floorId: AvatarAppConstants.firstFloorId);
+    // var route = CommonMethods.createRouteRTL(screen);
+    // Navigator.push(context, route);
+  }
+
+  // endregion
+
+  // region closeIndoor
+  void closeIndoor() {
+    if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
+    setupAvatarVideo();
+  }
+
+  // endregion
+
+  // region onProgress
+  void onProgress(int progress) {
+    print("progress == $progress");
+    if (progress == 100) runJS();
+  }
+
+  // endregion
+
+  // region run JS
+  void runJS() async {
+    await webViewController.runJavaScript("document.querySelector('.free-trial-banner').style.display = 'none'");
   }
 
   // endregion
@@ -551,24 +580,6 @@ class AvatarTTSBloc {
       await controller!.setVolume(0);
       await flutterTts.speak(answerTextCtrl.text);
       await controller!.play();
-    } catch (exception) {
-      if (!context.mounted) return;
-      CommonWidgets.infoDialog(context, exception.toString());
-    }
-  }
-
-  // endregion
-
-  // region playGeneratedAvatarVideo
-  Future<void> playGeneratedAvatarVideo(String url) async {
-    try {
-      // speak from out put text form gpt
-      // use device default by google
-      print(url);
-      controller = VideoPlayerController.networkUrl(Uri.parse(url));
-      await controller!.initialize();
-      playVideo();
-      if (!videoLoadingCtrl.isClosed) videoLoadingCtrl.sink.add(true);
     } catch (exception) {
       if (!context.mounted) return;
       CommonWidgets.infoDialog(context, exception.toString());

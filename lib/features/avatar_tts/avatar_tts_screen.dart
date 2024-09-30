@@ -73,6 +73,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
           stream: avatarTTSBloc.voiceCommandCtrl.stream,
           initialData: VoiceCommandState.Welcome,
           builder: (context, snapshot) {
+            if (snapshot.data! == VoiceCommandState.IndoorMap) return indoorMap();
             if (snapshot.data! == VoiceCommandState.Welcome) return const SizedBox();
             if (snapshot.data! == VoiceCommandState.Listening) return listening();
             if (snapshot.data! == VoiceCommandState.Loading) return const SpinKitPulse(color: AppColors.primaryColor, size: 150);
@@ -81,6 +82,30 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
             }
             return const SizedBox();
           }),
+    );
+  }
+
+  // endregion
+
+  // region indoorMap
+  Widget indoorMap() {
+    return Stack(
+      children: [
+        WebViewWidget(controller: avatarTTSBloc.webViewController),
+        Align(
+            alignment: Alignment.topRight,
+            child: Container(
+              margin: const EdgeInsets.only(top: 13, right: 10),
+              child: CupertinoButton(
+                  padding: EdgeInsets.zero,
+                  child: Container(
+                      height: 25,
+                      width: 25,
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(20), color: AppColors.purpleColor),
+                      child: const Icon(Icons.close, size: 18, color: Colors.white)),
+                  onPressed: () => avatarTTSBloc.closeIndoor()),
+            ))
+      ],
     );
   }
 
@@ -167,17 +192,17 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
 
   // region finished
   Widget finished() {
-    return SlideTransition(
-      position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
-      child: Container(
-        height: 65,
-        margin: const EdgeInsets.only(bottom: 10),
-        child: Center(
-          child: ListView(
-            shrinkWrap: true,
-            scrollDirection: Axis.horizontal,
-            children: [
-              ValueListenableBuilder<String>(
+    return Container(
+      height: 65,
+      margin: const EdgeInsets.only(bottom: 10),
+      child: Center(
+        child: ListView(
+          shrinkWrap: true,
+          scrollDirection: Axis.horizontal,
+          children: [
+            SlideTransition(
+              position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
+              child: ValueListenableBuilder<String>(
                   valueListenable: avatarTTSBloc.languageCtrl,
                   builder: (context, value, _) {
                     return Container(
@@ -200,7 +225,10 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
                           )),
                     );
                   }),
-              Container(
+            ),
+            SlideTransition(
+              position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
+              child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 10),
                 margin: const EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), border: Border.all(width: 1, color: AppColors.primaryColor)),
@@ -219,7 +247,10 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
                       ),
                     )),
               ),
-              Container(
+            ),
+            SlideTransition(
+              position: Tween<Offset>(begin: const Offset(-1, -1), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
+              child: Container(
                 margin: const EdgeInsets.only(right: 20, left: 20, top: 10, bottom: 10),
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: AppColors.primaryColor),
@@ -228,8 +259,8 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
                     onPressed: () => avatarTTSBloc.onPressFinish(),
                     child: Text(AvatarAppStrings.finish, style: const TextStyle(color: Colors.white))),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -265,34 +296,30 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
 
   // region avatarView
   Widget avatarView() {
-    return Container(
-      alignment: Alignment.center,
-      height: MediaQuery.of(context).size.width / 1.5,
-      margin: const EdgeInsets.only(bottom: 10),
-      child: Center(
-        child: StreamBuilder<VoiceCommandState>(
-            stream: avatarTTSBloc.voiceCommandCtrl.stream,
-            initialData: VoiceCommandState.Welcome,
-            builder: (context, voiceCommandState) {
-              // if (voiceCommandState.data! != VoiceCommandState.Welcome) {
-              // return WebViewWidget(controller: avatarTTSBloc.webViewController);
-              // }
-              return StreamBuilder<bool>(
-                  stream: avatarTTSBloc.videoLoadingCtrl.stream,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) return const SizedBox();
-                    if (avatarTTSBloc.controller == null) return const SizedBox();
-                    return InkWell(
-                      onTap: voiceCommandState.data! == VoiceCommandState.Welcome ? () => avatarTTSBloc.showAvatar() : null,
-                      child: AspectRatio(
-                        aspectRatio: avatarTTSBloc.controller!.value.aspectRatio,
-                        child: VideoPlayer(avatarTTSBloc.controller!),
-                      ),
-                    );
-                  });
-            }),
-      ),
-    );
+    return StreamBuilder<VoiceCommandState>(
+        stream: avatarTTSBloc.voiceCommandCtrl.stream,
+        initialData: VoiceCommandState.Welcome,
+        builder: (context, voiceCommandState) {
+          if (voiceCommandState.data! == VoiceCommandState.IndoorMap) return const SizedBox();
+          return Container(
+            alignment: Alignment.center,
+            height: MediaQuery.of(context).size.width / 1.5,
+            margin: const EdgeInsets.only(bottom: 10),
+            child: StreamBuilder<bool>(
+                stream: avatarTTSBloc.videoLoadingCtrl.stream,
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) return const SizedBox();
+                  if (avatarTTSBloc.controller == null) return const SizedBox();
+                  return InkWell(
+                    onTap: voiceCommandState.data! == VoiceCommandState.Welcome ? () => avatarTTSBloc.showAvatar() : null,
+                    child: AspectRatio(
+                      aspectRatio: avatarTTSBloc.controller!.value.aspectRatio,
+                      child: VideoPlayer(avatarTTSBloc.controller!),
+                    ),
+                  );
+                }),
+          );
+        });
   }
 
   // endregion
