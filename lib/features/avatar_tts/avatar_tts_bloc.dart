@@ -519,29 +519,41 @@ class AvatarTTSBloc {
 
   // region openDirectionScreen
   Future<void> openDirectionScreen(String navigateId) async {
-    var url =
-        "https://map-viewer.situm.com/?apikey=${AvatarAppConstants.situmApiKey}&domain=${AvatarAppConstants.domain}&mode=embed&deviceId=564648026015&wl=true&lng=en&buildingid=${AvatarAppConstants.buildingId}&floorid=${AvatarAppConstants.firstFloorId}&navigation_to=$navigateId&poiid=$navigateId&navigation_from=643123";
-    await webViewController.setJavaScriptMode(JavaScriptMode.unrestricted);
-    await webViewController.loadRequest(Uri.parse(url));
-    await webViewController.setBackgroundColor(Colors.white);
-    await webViewController.setNavigationDelegate(NavigationDelegate(onProgress: (progress) => onProgress(progress)));
+    try {
+      var url =
+          "https://map-viewer.situm.com/?apikey=${AvatarAppConstants.situmApiKey}&domain=${AvatarAppConstants.domain}&mode=embed&deviceId=564648026015&wl=true&lng=en&buildingid=${AvatarAppConstants.buildingId}&floorid=${AvatarAppConstants.firstFloorId}&navigation_to=$navigateId&poiid=$navigateId&navigation_from=643123";
+      await webViewController.setJavaScriptMode(JavaScriptMode.unrestricted);
+      await webViewController.loadRequest(Uri.parse(url));
+      await webViewController.setBackgroundColor(Colors.white);
+      await webViewController.setNavigationDelegate(NavigationDelegate(onProgress: (progress) => onProgress(progress)));
+    } catch (exception) {
+      print(exception);
+    }
   }
 
   // endregion
 
   // region closeIndoor
   void closeIndoor() {
-    if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
-    setupAvatarVideo();
+    try {
+      if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
+      setupAvatarVideo();
+    } catch (exception) {
+      print(exception);
+    }
   }
 
   // endregion
 
   // region onProgress
   Future<void> onProgress(int progress) async {
-    if (progress == 100) {
-      await webViewController.runJavaScript("document.querySelector('.free-trial-banner').style.display = 'none'");
-      if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.IndoorMap);
+    try {
+      if (progress == 100) {
+        await webViewController.runJavaScript("document.querySelector('.free-trial-banner').style.display = 'none'");
+        if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.IndoorMap);
+      }
+    } catch (exception) {
+      print(exception);
     }
   }
 
