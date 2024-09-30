@@ -465,9 +465,9 @@ class AvatarTTSBloc {
           content == textCommandsInCantonese[1]) {
         answerTextCtrl.text = AvatarAppStrings.directionMsg;
         if (content.contains("Meeting") || content.contains("會議")) {
-          openDirectionScreen(AvatarAppConstants.meetingPOI);
+          await openDirectionScreen(AvatarAppConstants.meetingPOI);
         } else if (content.contains("Coffee") || content.contains('咖啡')) {
-          openDirectionScreen(AvatarAppConstants.coffeePOI);
+          await openDirectionScreen(AvatarAppConstants.coffeePOI);
         }
       } else if (content == textCommandsInEnglish.last || content == textCommandsInCantonese.last) {
         if (languageCtrl.value == Languages.english.name) {
@@ -475,6 +475,7 @@ class AvatarTTSBloc {
         } else {
           answerTextCtrl.text = "香港目前氣溫 34°C，天晴，間中有雲";
         }
+        if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
       } else {
         // get query
         var query = getQuery(content);
@@ -493,13 +494,15 @@ class AvatarTTSBloc {
         // check direction
         if (answerTextCtrl.text.contains(AvatarAppStrings.directionMsg)) {
           if (content.toLowerCase().contains("meeting") || content.contains("會議")) {
-            openDirectionScreen(AvatarAppConstants.meetingPOI);
+            await openDirectionScreen(AvatarAppConstants.meetingPOI);
           } else if (content.toLowerCase().contains("coffee") || content.contains('咖啡')) {
-            openDirectionScreen(AvatarAppConstants.coffeePOI);
+            await openDirectionScreen(AvatarAppConstants.coffeePOI);
           }
         }
+        if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
       }
-
+      // readText
+      readText();
       if (!context.mounted) return;
     } on ApiErrorResponse catch (error) {
       if (error.error == null) {
@@ -509,25 +512,19 @@ class AvatarTTSBloc {
       }
     } catch (exception) {
       CommonWidgets.infoDialog(context, exception.toString());
-    } finally {
-      readText();
-      if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
     }
   }
 
   // endregion
 
   // region openDirectionScreen
-  void openDirectionScreen(String navigateId) async {
+  Future<void> openDirectionScreen(String navigateId) async {
     var url =
         "https://map-viewer.situm.com/?apikey=${AvatarAppConstants.situmApiKey}&domain=${AvatarAppConstants.domain}&mode=embed&deviceId=564648026015&wl=true&lng=en&buildingid=${AvatarAppConstants.buildingId}&floorid=${AvatarAppConstants.firstFloorId}&navigation_to=$navigateId&poiid=$navigateId&navigation_from=643123";
     await webViewController.setJavaScriptMode(JavaScriptMode.unrestricted);
     await webViewController.loadRequest(Uri.parse(url));
+    await webViewController.setBackgroundColor(Colors.white);
     await webViewController.setNavigationDelegate(NavigationDelegate(onProgress: (progress) => onProgress(progress)));
-    if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.IndoorMap);
-    // var screen = IndoorNavScreen(navigateToId: navigateId, floorId: AvatarAppConstants.firstFloorId);
-    // var route = CommonMethods.createRouteRTL(screen);
-    // Navigator.push(context, route);
   }
 
   // endregion
@@ -541,16 +538,11 @@ class AvatarTTSBloc {
   // endregion
 
   // region onProgress
-  void onProgress(int progress) {
-    print("progress == $progress");
-    if (progress == 100) runJS();
-  }
-
-  // endregion
-
-  // region run JS
-  void runJS() async {
-    await webViewController.runJavaScript("document.querySelector('.free-trial-banner').style.display = 'none'");
+  Future<void> onProgress(int progress) async {
+    if (progress == 100) {
+      await webViewController.runJavaScript("document.querySelector('.free-trial-banner').style.display = 'none'");
+      if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.IndoorMap);
+    }
   }
 
   // endregion
