@@ -19,6 +19,16 @@ samples, guidance on mobile development, and a full API reference.
 
 export PATH="$PATH:`pwd`/flutter_3.22.2/bin"
 
+## GPT Setup
+Chat GPT: https://platform.openai.com/apps
+email: santoshpro95@gmail.com
+Login by google login
+
+## Indoor Map (SITUM)
+Web url: https://situm.com/en/solutions/indoor-maps/
+email: santosh.kumar@neoma.hk
+password: Cskmpces12
+
 ## Generate Release Apk
 
 flutter build apk --split-per-abi --no-tree-shake-icons
