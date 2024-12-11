@@ -81,22 +81,23 @@ class AvatarTTSBloc {
   // region Init
   void init(state) async {
     try {
+      addToCartPopUpAnimationController = AnimationController(vsync: state, duration: const Duration(milliseconds: 800));
+      ChangeAvatarLanguage(Languages.cantonese.name);
+      addQuestions();
       await setupAvatarVideo();
       await requestAudioPermission();
       await initialiseCamera();
       await setUpTextToSpeech();
       await speechToTextSetup();
-      addQuestions();
-      ChangeAvatarLanguage(Languages.cantonese.name);
-      if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
       AvatarAppConstants.platform.setMethodCallHandler(didReceiveFromNative);
-      addToCartPopUpAnimationController = AnimationController(vsync: state, duration: const Duration(milliseconds: 800));
       if (!context.mounted) return;
     } catch (exception) {
       CommonWidgets.errorDialog(context);
       print(exception);
       if (!context.mounted) return;
       CommonWidgets.infoDialog(context, exception.toString());
+    } finally {
+      if (!loadingCtrl.isClosed) loadingCtrl.sink.add(true);
     }
   }
 
