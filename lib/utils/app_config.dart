@@ -8,13 +8,11 @@ class AppConfig {
   //   return MediaQuery.of(context).size.width / 1.5;
   // }
 
-
-
   // For Kiosk
-  static double buttonFont = 18;
-  static double suggestionQuestionFont = 18;
+  static double buttonFont = 20;
+  static double suggestionQuestionFont = 20;
   static double avatarSize(BuildContext context){
-    return MediaQuery.of(context).size.width / 1.1;
+    return MediaQuery.of(context).size.width / 1.4;
   }
 
 }

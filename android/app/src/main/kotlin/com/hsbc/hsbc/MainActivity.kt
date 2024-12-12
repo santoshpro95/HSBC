@@ -58,20 +58,20 @@ class MainActivity: FlutterActivity() {
     private fun callListeners() {
         methodChannel?.setMethodCallHandler { call, result ->
 
-            // Text To Speech Feature
-            if (call.method == util.ttsSetup) {
-                textToSpeech.initialiseSpeech()
-                result.success("")
-            }
-            if (call.method == util.ttsDispose) {
-                textToSpeech.dispose()
-                result.success("")
-            }
-            if (call.method == util.speakText) {
-                textToSpeech.startStreamPlaybackPressed(call.arguments.toString())
-                result.success("")
-            }
-            // endregion
+//            // Text To Speech Feature
+//            if (call.method == util.ttsSetup) {
+//                textToSpeech.initialiseSpeech()
+//                result.success("")
+//            }
+//            if (call.method == util.ttsDispose) {
+//                textToSpeech.dispose()
+//                result.success("")
+//            }
+//            if (call.method == util.speakText) {
+//                textToSpeech.startStreamPlaybackPressed(call.arguments.toString())
+//                result.success("")
+//            }
+//            // endregion
 
 
             // Speech To Text
