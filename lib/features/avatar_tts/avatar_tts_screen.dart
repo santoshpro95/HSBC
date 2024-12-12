@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hsbc/features/avatar_tts/avatar_tts_bloc.dart';
 import 'package:hsbc/utils/app_colors.dart';
+import 'package:hsbc/utils/app_config.dart';
 import 'package:hsbc/utils/app_constants.dart';
 import 'package:hsbc/utils/app_images.dart';
 import 'package:hsbc/utils/app_stirngs.dart';
@@ -184,7 +185,8 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
         child: CupertinoButton(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           onPressed: () => avatarTTSBloc.callGPT(question),
-          child: Text(question, style: const TextStyle(fontSize: 14, color: AppColors.darkGreyColor1, fontWeight: FontWeight.w500)),
+          child: Text(question,
+              style: TextStyle(fontSize: AppConfig.suggestionQuestionFont, color: AppColors.darkGreyColor1, fontWeight: FontWeight.w500)),
         ));
   }
 
@@ -219,7 +221,8 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
                                 SvgPicture.asset(AppImages.write,
                                     height: 20, width: 20, colorFilter: const ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn)),
                                 const SizedBox(width: 10),
-                                Text(AvatarAppStrings.tapToWrite, style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500)),
+                                Text(AvatarAppStrings.tapToWrite,
+                                    style: TextStyle(color: AppColors.primaryColor, fontSize: AppConfig.buttonFont, fontWeight: FontWeight.w500)),
                               ],
                             ),
                           )),
@@ -242,7 +245,8 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
                           SvgPicture.asset(AppImages.micOn,
                               height: 20, width: 20, colorFilter: const ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn)),
                           const SizedBox(width: 10),
-                          Text(AvatarAppStrings.tapToSpeak, style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500)),
+                          Text(AvatarAppStrings.tapToSpeak,
+                              style: TextStyle(color: AppColors.primaryColor, fontSize: AppConfig.buttonFont, fontWeight: FontWeight.w500)),
                         ],
                       ),
                     )),
@@ -257,7 +261,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
                 child: CupertinoButton(
                     padding: EdgeInsets.zero,
                     onPressed: () => avatarTTSBloc.onPressFinish(),
-                    child: Text(AvatarAppStrings.finish, style: const TextStyle(color: Colors.white))),
+                    child: Text(AvatarAppStrings.finish, style: TextStyle(color: Colors.white, fontSize: AppConfig.buttonFont))),
               ),
             ),
           ],
@@ -303,7 +307,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
           if (voiceCommandState.data! == VoiceCommandState.IndoorMap) return const SizedBox();
           return Container(
             alignment: Alignment.center,
-            height: MediaQuery.of(context).size.width / 1.5,
+            height: AppConfig.avatarSize(context),
             margin: const EdgeInsets.only(bottom: 10),
             child: StreamBuilder<bool>(
                 stream: avatarTTSBloc.videoLoadingCtrl.stream,
