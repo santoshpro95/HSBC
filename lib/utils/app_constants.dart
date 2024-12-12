@@ -4,7 +4,10 @@ import 'package:flutter/services.dart';
 
 class AvatarAppConstants {
 
-  // Indoor Map Config
+  // Indoor Map Config Francois
+ // static const situmApiKey = "c3a63634ce37674922e99251ebe9b1327c03287e47c2d21e71707a51b7b558d1";
+
+  // Indoor Map Config (santosh.kumar@neoma.hk)
   static const situmApiKey = "2b9357322c441bb29923647fce20aa8348f668b0ebd06e2b79d2847544543ff3";
   static const domain = "dashboard.situm.com";
   static const buildingId = "17252";
