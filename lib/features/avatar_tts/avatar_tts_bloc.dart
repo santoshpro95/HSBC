@@ -54,7 +54,7 @@ class AvatarTTSBloc {
   // endregion
 
   // region Services
-   FlutterTts flutterTts = FlutterTts();
+  //  FlutterTts flutterTts = FlutterTts();
   AvatarApiService avatarApiService = AvatarApiService();
 
   // endregion
@@ -260,24 +260,24 @@ class AvatarTTSBloc {
   // region setUpTextToSpeech
   Future<void> setUpTextToSpeech() async {
     try {
-      if (languageCtrl.value == Languages.cantonese.name) {
-        await flutterTts.setLanguage("zh-HK");
-      } else {
-        await flutterTts.setLanguage("en-US");
-      }
-
-      await flutterTts.setPitch(1);
-      await flutterTts.setVolume(1);
-      await flutterTts.setSpeechRate(0.5);
-
-      // Set event listener for when speech finishes
-      flutterTts.setCompletionHandler(() async {
-        print("Speech finished");
-        await controller!.pause();
-        await controller!.seekTo(Duration.zero);
-      });
-
-      await flutterTts.speak("Hello this is testing");
+      // if (languageCtrl.value == Languages.cantonese.name) {
+      //   await flutterTts.setLanguage("zh-HK");
+      // } else {
+      //   await flutterTts.setLanguage("en-US");
+      // }
+      //
+      // await flutterTts.setPitch(1);
+      // await flutterTts.setVolume(1);
+      // await flutterTts.setSpeechRate(0.5);
+      //
+      // // Set event listener for when speech finishes
+      // flutterTts.setCompletionHandler(() async {
+      //   print("Speech finished");
+      //   await controller!.pause();
+      //   await controller!.seekTo(Duration.zero);
+      // });
+      //
+      // await flutterTts.speak("Hello this is testing");
 
      // await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.ttsSetup);
     } catch (exception) {
@@ -507,7 +507,7 @@ class AvatarTTSBloc {
         if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
       }
       // readText
-      readText();
+     // readText();
       if (!context.mounted) return;
     } on ApiErrorResponse catch (error) {
       if (error.error == null) {
