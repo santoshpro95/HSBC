@@ -128,6 +128,7 @@ class TextToSpeech {
         while (!stopped) {
             val len = audioDataStream!!.readData(buffer)
             if (len == 0L) {
+
                 break
             }
             val bytesWritten = audioTrack!!.write(buffer, 0, len.toInt())

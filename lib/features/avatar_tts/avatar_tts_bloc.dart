@@ -276,6 +276,8 @@ class AvatarTTSBloc {
         await controller!.pause();
         await controller!.seekTo(Duration.zero);
       });
+
+     // await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.ttsSetup);
     } catch (exception) {
       if (!context.mounted) return;
       print(exception);
@@ -335,7 +337,7 @@ class AvatarTTSBloc {
       answerTextCtrl.clear();
       voiceCommandTextCtrl.clear();
       await faceController?.stopImageStream();
-      await flutterTts.stop();
+      // await flutterTts.stop();
       await controller!.pause();
       await controller!.seekTo(Duration.zero);
 
@@ -421,7 +423,7 @@ class AvatarTTSBloc {
       answerTextCtrl.clear();
 
       // stop text to speech
-      await flutterTts.stop();
+      // await flutterTts.stop();
 
       // play intro video
       await setupAvatarVideo();
@@ -449,7 +451,7 @@ class AvatarTTSBloc {
       if (content.trim().isEmpty) return;
       print("calling Api====>");
       await faceController?.stopImageStream();
-      await flutterTts.stop();
+      // await flutterTts.stop();
       await controller!.pause();
       await controller!.seekTo(Duration.zero);
 
@@ -583,6 +585,7 @@ class AvatarTTSBloc {
       await controller!.seekTo(Duration.zero);
       await controller!.setLooping(true);
       await controller!.setVolume(0);
+      // await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.speakText, answerTextCtrl.text);
       await flutterTts.speak(answerTextCtrl.text);
       await controller!.play();
     } catch (exception) {
@@ -621,6 +624,7 @@ class AvatarTTSBloc {
       loadingCtrl.close();
       addToCartPopUpAnimationController.dispose();
       await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.sttDispose);
+      await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.ttsDispose);
     } catch (exception) {
       if (!context.mounted) return;
       print(exception);

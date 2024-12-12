@@ -46,6 +46,11 @@ class AvatarAppConstants {
   static const stopListen = "stopListen";
   static const sttDispose = "sttDispose";
 
+  // test to speech
+  static const ttsSetup = "ttsSetup";
+  static const ttsDispose = "ttsDispose";
+  static const speakText = "speakText";
+
   // invoke from Native
   static const getSpeechToText = "getSpeechToText";
   static const getMicStatus = "getMicStatus";

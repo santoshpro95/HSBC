@@ -122,7 +122,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
           readOnly: true,
           minLines: 1,
           maxLines: 3,
-          style: const TextStyle(color: AppColors.primaryColor, overflow: TextOverflow.ellipsis, fontWeight: FontWeight.w600),
+          style: const TextStyle(color: AppColors.primaryColor, overflow: TextOverflow.ellipsis, fontSize: 20, fontWeight: FontWeight.w600),
           textAlign: TextAlign.center,
           decoration: const InputDecoration.collapsed(hintText: '')),
     );
@@ -140,7 +140,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
           readOnly: true,
           maxLines: null,
           minLines: 1,
-          style: const TextStyle(color: AppColors.primaryColor, fontWeight: FontWeight.w500),
+          style: const TextStyle(color: AppColors.primaryColor, fontSize: 20, fontWeight: FontWeight.w500),
           textAlign: TextAlign.center,
           decoration: const InputDecoration.collapsed(hintText: '')),
     );

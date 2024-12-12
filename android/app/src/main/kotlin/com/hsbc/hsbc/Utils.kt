@@ -13,4 +13,9 @@ class Utils {
     // invoke from native
     var getSpeechToText = "getSpeechToText"
     var getMicStatus = "getMicStatus"
+
+    // test to speech
+    var ttsSetup = "ttsSetup"
+    var ttsDispose = "ttsDispose"
+    var speakText = "speakText"
 }
