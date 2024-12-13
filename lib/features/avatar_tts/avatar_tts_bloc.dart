@@ -54,7 +54,7 @@ class AvatarTTSBloc {
   // endregion
 
   // region Services
-  //  FlutterTts flutterTts = FlutterTts();
+  FlutterTts flutterTts = FlutterTts();
   AvatarApiService avatarApiService = AvatarApiService();
 
   // endregion
@@ -260,24 +260,26 @@ class AvatarTTSBloc {
   // region setUpTextToSpeech
   Future<void> setUpTextToSpeech() async {
     try {
-      // if (languageCtrl.value == Languages.cantonese.name) {
-      //   await flutterTts.setLanguage("zh-HK");
-      // } else {
-      //   await flutterTts.setLanguage("en-US");
-      // }
-      //
-      // await flutterTts.setPitch(1);
-      // await flutterTts.setVolume(1);
-      // await flutterTts.setSpeechRate(0.5);
-      //
-      // // Set event listener for when speech finishes
-      // flutterTts.setCompletionHandler(() async {
-      //   print("Speech finished");
-      //   await controller!.pause();
-      //   await controller!.seekTo(Duration.zero);
-      // });
-      //
-      // await flutterTts.speak("Hello this is testing");
+      // check if it is for mobile phone
+      if (!AvatarAppConstants.isForMobile) return;
+
+      // set language
+      if (languageCtrl.value == Languages.cantonese.name) {
+        await flutterTts.setLanguage("zh-HK");
+      } else {
+        await flutterTts.setLanguage("en-US");
+      }
+
+      await flutterTts.setPitch(1);
+      await flutterTts.setVolume(1);
+      await flutterTts.setSpeechRate(0.5);
+
+      // Set event listener for when speech finishes
+      flutterTts.setCompletionHandler(() async {
+        print("Speech finished");
+        await controller!.pause();
+        await controller!.seekTo(Duration.zero);
+      });
     } catch (exception) {
       if (!context.mounted) return;
       print(exception);
@@ -337,7 +339,7 @@ class AvatarTTSBloc {
       answerTextCtrl.clear();
       voiceCommandTextCtrl.clear();
       await faceController?.stopImageStream();
-     // await flutterTts.stop();
+      if (AvatarAppConstants.isForMobile) await flutterTts.stop();
       await controller!.pause();
       await controller!.seekTo(Duration.zero);
 
@@ -381,7 +383,7 @@ class AvatarTTSBloc {
   void writeCommand() async {
     try {
       await faceController?.stopImageStream();
-     // await flutterTts.stop();
+      if (AvatarAppConstants.isForMobile) await flutterTts.stop();
       await controller!.pause();
       await controller!.seekTo(Duration.zero);
 
@@ -423,7 +425,7 @@ class AvatarTTSBloc {
       answerTextCtrl.clear();
 
       // stop text to speech
-     // await flutterTts.stop();
+      if (AvatarAppConstants.isForMobile) await flutterTts.stop();
 
       // play intro video
       await setupAvatarVideo();
@@ -451,7 +453,7 @@ class AvatarTTSBloc {
       if (content.trim().isEmpty) return;
       print("calling Api====>");
       await faceController?.stopImageStream();
-     // await flutterTts.stop();
+      if (AvatarAppConstants.isForMobile) await flutterTts.stop();
       await controller!.pause();
       await controller!.seekTo(Duration.zero);
 
@@ -505,7 +507,7 @@ class AvatarTTSBloc {
         if (!voiceCommandCtrl.isClosed) voiceCommandCtrl.sink.add(VoiceCommandState.ShowResult);
       }
       // readText
-     // readText();
+      readText();
       if (!context.mounted) return;
     } on ApiErrorResponse catch (error) {
       if (error.error == null) {
@@ -585,8 +587,8 @@ class AvatarTTSBloc {
       await controller!.seekTo(Duration.zero);
       await controller!.setLooping(true);
       await controller!.setVolume(0);
-      // await flutterTts.speak(answerTextCtrl.text);
-      await controller!.play();
+      if (AvatarAppConstants.isForMobile) await flutterTts.speak(answerTextCtrl.text);
+      if (AvatarAppConstants.isForMobile) await controller!.play();
     } catch (exception) {
       if (!context.mounted) return;
       CommonWidgets.infoDialog(context, exception.toString());
@@ -618,7 +620,7 @@ class AvatarTTSBloc {
     try {
       controller!.dispose();
       videoLoadingCtrl.close();
-      // flutterTts.stop();
+      if (AvatarAppConstants.isForMobile) flutterTts.stop();
       faceController?.dispose();
       loadingCtrl.close();
       addToCartPopUpAnimationController.dispose();

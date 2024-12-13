@@ -5,7 +5,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hsbc/features/avatar_tts/avatar_tts_bloc.dart';
 import 'package:hsbc/utils/app_colors.dart';
-import 'package:hsbc/utils/app_config.dart';
 import 'package:hsbc/utils/app_constants.dart';
 import 'package:hsbc/utils/app_images.dart';
 import 'package:hsbc/utils/app_stirngs.dart';
@@ -122,7 +121,11 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
           readOnly: true,
           minLines: 1,
           maxLines: 3,
-          style:  TextStyle(color: AppColors.primaryColor,  overflow: TextOverflow.ellipsis, fontSize: AppConfig.ansFont, fontWeight: FontWeight.w600),
+          style: TextStyle(
+              color: AppColors.primaryColor,
+              overflow: TextOverflow.ellipsis,
+              fontSize: AvatarAppConstants.isForMobile ? 16 : 25,
+              fontWeight: FontWeight.w600),
           textAlign: TextAlign.center,
           decoration: const InputDecoration.collapsed(hintText: '')),
     );
@@ -140,7 +143,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
           readOnly: true,
           maxLines: null,
           minLines: 1,
-          style: TextStyle(color: AppColors.primaryColor, fontSize: AppConfig.ansFont, fontWeight: FontWeight.w500),
+          style: TextStyle(color: AppColors.primaryColor, fontSize: AvatarAppConstants.isForMobile ? 16 : 25, fontWeight: FontWeight.w500),
           textAlign: TextAlign.center,
           decoration: const InputDecoration.collapsed(hintText: '')),
     );
@@ -180,13 +183,13 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
   // region CommonQuestionItem
   Widget commonQuestionItem(String question) {
     return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+        margin:  EdgeInsets.symmetric(horizontal: 10, vertical:AvatarAppConstants.isForMobile? 5: 15),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), border: Border.all(color: Colors.grey, width: 0.5)),
         child: CupertinoButton(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           onPressed: () => avatarTTSBloc.callGPT(question),
           child: Text(question,
-              style: TextStyle(fontSize: AppConfig.suggestionQuestionFont, color: AppColors.darkGreyColor1, fontWeight: FontWeight.w500)),
+              style: TextStyle(fontSize: AvatarAppConstants.isForMobile ? 14 : 25, color: AppColors.darkGreyColor1, fontWeight: FontWeight.w500)),
         ));
   }
 
@@ -195,8 +198,8 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
   // region finished
   Widget finished() {
     return Container(
-      height: 115,
-      margin: const EdgeInsets.only(bottom: 10, top: 50),
+      height: AvatarAppConstants.isForMobile ? 65 : 110,
+      margin: EdgeInsets.only(bottom: 10, top: AvatarAppConstants.isForMobile ? 0 : 50),
       child: Center(
         child: ListView(
           shrinkWrap: true,
@@ -208,8 +211,8 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
                   valueListenable: avatarTTSBloc.languageCtrl,
                   builder: (context, value, _) {
                     return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                      padding: EdgeInsets.symmetric(horizontal: AvatarAppConstants.isForMobile ? 10 : 40),
+                      margin: EdgeInsets.symmetric(horizontal: 10, vertical: AvatarAppConstants.isForMobile ? 10 : 20),
                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), border: Border.all(width: 1, color: AppColors.primaryColor)),
                       child: CupertinoButton(
                           padding: EdgeInsets.zero,
@@ -222,19 +225,22 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
                                     height: 20, width: 20, colorFilter: const ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn)),
                                 const SizedBox(width: 10),
                                 Text(AvatarAppStrings.tapToWrite,
-                                    style: TextStyle(color: AppColors.primaryColor, fontSize: AppConfig.buttonFont, fontWeight: FontWeight.w500)),
+                                    style: TextStyle(
+                                        color: AppColors.primaryColor,
+                                        fontSize: AvatarAppConstants.isForMobile ? 14 : 25,
+                                        fontWeight: FontWeight.w500)),
                               ],
                             ),
                           )),
                     );
                   }),
             ),
-            SizedBox(width: 50),
+            Visibility(visible: !AvatarAppConstants.isForMobile, child: const SizedBox(width: 50)),
             SlideTransition(
               position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 40),
-                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
+                padding: EdgeInsets.symmetric(horizontal: AvatarAppConstants.isForMobile ? 10 : 40),
+                margin: EdgeInsets.symmetric(horizontal: 10, vertical: AvatarAppConstants.isForMobile ? 10 : 20),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), border: Border.all(width: 1, color: AppColors.primaryColor)),
                 child: CupertinoButton(
                     padding: EdgeInsets.zero,
@@ -247,23 +253,24 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
                               height: 20, width: 20, colorFilter: const ColorFilter.mode(AppColors.primaryColor, BlendMode.srcIn)),
                           const SizedBox(width: 10),
                           Text(AvatarAppStrings.tapToSpeak,
-                              style: TextStyle(color: AppColors.primaryColor, fontSize: AppConfig.buttonFont, fontWeight: FontWeight.w500)),
+                              style: TextStyle(
+                                  color: AppColors.primaryColor, fontSize: AvatarAppConstants.isForMobile ? 14 : 25, fontWeight: FontWeight.w500)),
                         ],
                       ),
                     )),
               ),
             ),
-            const SizedBox(width: 50),
+            Visibility(visible: !AvatarAppConstants.isForMobile, child: const SizedBox(width: 50)),
             SlideTransition(
               position: Tween<Offset>(begin: const Offset(-1, -1), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
               child: Container(
-                margin: const EdgeInsets.only(right: 20, left: 20, top: 10, bottom: 10),
+                margin: EdgeInsets.only(right: 20, left: AvatarAppConstants.isForMobile ? 10 : 20, top: 10, bottom: 10),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: AppColors.primaryColor),
                 child: CupertinoButton(
                     padding: EdgeInsets.zero,
                     onPressed: () => avatarTTSBloc.onPressFinish(),
-                    child: Text(AvatarAppStrings.finish, style: TextStyle(color: Colors.white, fontSize: AppConfig.buttonFont))),
+                    child: Text(AvatarAppStrings.finish, style: TextStyle(color: Colors.white, fontSize: AvatarAppConstants.isForMobile ? 14 : 25))),
               ),
             ),
           ],
@@ -309,7 +316,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
           if (voiceCommandState.data! == VoiceCommandState.IndoorMap) return const SizedBox();
           return Container(
             alignment: Alignment.center,
-            height: AppConfig.avatarSize(context),
+            height: MediaQuery.of(context).size.width / 1.5,
             margin: const EdgeInsets.only(bottom: 10),
             child: StreamBuilder<bool>(
                 stream: avatarTTSBloc.videoLoadingCtrl.stream,

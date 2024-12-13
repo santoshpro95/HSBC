@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 class AvatarAppConstants {
-
+  static bool isForMobile = true;
   // Indoor Map Config Francois
  // static const situmApiKey = "c3a63634ce37674922e99251ebe9b1327c03287e47c2d21e71707a51b7b558d1";
 
