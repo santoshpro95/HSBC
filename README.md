@@ -28,6 +28,7 @@ Login by google login
 Web url: https://situm.com/en/solutions/indoor-maps/
 email: santosh.kumar@neoma.hk
 password: Cskmpces12
+https://dashboard.situm.com/sign_up
 
 ## Generate Release Apk
 

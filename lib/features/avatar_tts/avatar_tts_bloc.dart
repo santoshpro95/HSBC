@@ -278,8 +278,6 @@ class AvatarTTSBloc {
       // });
       //
       // await flutterTts.speak("Hello this is testing");
-
-     // await AvatarAppConstants.platform.invokeMethod(AvatarAppConstants.ttsSetup);
     } catch (exception) {
       if (!context.mounted) return;
       print(exception);

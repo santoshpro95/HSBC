@@ -180,7 +180,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
   // region CommonQuestionItem
   Widget commonQuestionItem(String question) {
     return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 5, vertical: 5),
+        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 15),
         decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), border: Border.all(color: Colors.grey, width: 0.5)),
         child: CupertinoButton(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -195,8 +195,8 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
   // region finished
   Widget finished() {
     return Container(
-      height: 65,
-      margin: const EdgeInsets.only(bottom: 10),
+      height: 115,
+      margin: const EdgeInsets.only(bottom: 10, top: 50),
       child: Center(
         child: ListView(
           shrinkWrap: true,
@@ -208,8 +208,8 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
                   valueListenable: avatarTTSBloc.languageCtrl,
                   builder: (context, value, _) {
                     return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 40),
+                      margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), border: Border.all(width: 1, color: AppColors.primaryColor)),
                       child: CupertinoButton(
                           padding: EdgeInsets.zero,
@@ -229,11 +229,12 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
                     );
                   }),
             ),
+            SizedBox(width: 50),
             SlideTransition(
               position: Tween<Offset>(begin: const Offset(-1, 0), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                margin: const EdgeInsets.symmetric(vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 40),
+                margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), border: Border.all(width: 1, color: AppColors.primaryColor)),
                 child: CupertinoButton(
                     padding: EdgeInsets.zero,
@@ -252,11 +253,12 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
                     )),
               ),
             ),
+            const SizedBox(width: 50),
             SlideTransition(
               position: Tween<Offset>(begin: const Offset(-1, -1), end: Offset.zero).animate(avatarTTSBloc.addToCartPopUpAnimationController),
               child: Container(
                 margin: const EdgeInsets.only(right: 20, left: 20, top: 10, bottom: 10),
-                padding: const EdgeInsets.symmetric(horizontal: 30),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 decoration: BoxDecoration(borderRadius: BorderRadius.circular(50), color: AppColors.primaryColor),
                 child: CupertinoButton(
                     padding: EdgeInsets.zero,
