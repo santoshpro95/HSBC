@@ -122,7 +122,7 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
           readOnly: true,
           minLines: 1,
           maxLines: 3,
-          style: const TextStyle(color: AppColors.primaryColor, overflow: TextOverflow.ellipsis, fontSize: 20, fontWeight: FontWeight.w600),
+          style:  TextStyle(color: AppColors.primaryColor,  overflow: TextOverflow.ellipsis, fontSize: AppConfig.ansFont, fontWeight: FontWeight.w600),
           textAlign: TextAlign.center,
           decoration: const InputDecoration.collapsed(hintText: '')),
     );
@@ -134,13 +134,13 @@ class _AvatarTTSScreenState extends State<AvatarTTSScreen> with TickerProviderSt
   Widget answerText() {
     if (avatarTTSBloc.answerTextCtrl.text.isEmpty) return const SizedBox();
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
       child: TextField(
           controller: avatarTTSBloc.answerTextCtrl,
           readOnly: true,
           maxLines: null,
           minLines: 1,
-          style: const TextStyle(color: AppColors.primaryColor, fontSize: 20, fontWeight: FontWeight.w500),
+          style: TextStyle(color: AppColors.primaryColor, fontSize: AppConfig.ansFont, fontWeight: FontWeight.w500),
           textAlign: TextAlign.center,
           decoration: const InputDecoration.collapsed(hintText: '')),
     );
