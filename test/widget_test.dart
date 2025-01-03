@@ -10,6 +10,11 @@
 //
 // import 'package:hsbc/main.dart';
 //
+// ## Indoor Map (SITUM)
+// Web url: https://situm.com/en/solutions/indoor-maps/
+// email: santosh.kumar@neoma.hk
+// password: Cskmpces12
+// https://dashboard.situm.com/sign_up
 // void main() {
 //   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
 //     // Build our app and trigger a frame.

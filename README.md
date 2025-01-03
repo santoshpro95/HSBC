@@ -24,12 +24,6 @@ Chat GPT: https://platform.openai.com/apps
 email: santoshpro95@gmail.com
 Login by google login
 
-## Indoor Map (SITUM)
-Web url: https://situm.com/en/solutions/indoor-maps/
-email: santosh.kumar@neoma.hk
-password: Cskmpces12
-https://dashboard.situm.com/sign_up
-
 ## Generate Release Apk
 
 flutter build apk --split-per-abi --no-tree-shake-icons
